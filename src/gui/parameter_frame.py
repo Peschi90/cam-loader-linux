@@ -238,18 +238,30 @@ class ParameterFrame(ttk.LabelFrame):
                 self._disable_control(text_entry)
         
         # Store references
-        self.parameter_widgets[param.name] = {
+        widget_ref = {
             'frame': frame,
             'control': control,
             'value_var': value_var,
             'param': param
         }
+        
+        # Add text entry reference if it exists
+        if param.min_val is not None and param.max_val is not None:
+            widget_ref['text_entry'] = locals().get('text_entry')
+            
+        self.parameter_widgets[param.name] = widget_ref
     
     def create_scale_control(self, parent, param: V4L2Parameter, value_var: tk.StringVar):
         """Create scale control for numeric parameters"""
+        # Store reference to text entry for synchronization
+        self._text_entry_vars = getattr(self, '_text_entry_vars', {})
+        
         def on_scale_change(value):
             int_value = int(float(value))
             value_var.set(str(int_value))
+            # Update text entry if it exists
+            if param.name in self._text_entry_vars:
+                self._text_entry_vars[param.name].set(str(int_value))
             self.parameter_changed_callback(param.name, int_value)
         
         scale = ttk.Scale(
@@ -267,6 +279,14 @@ class ParameterFrame(ttk.LabelFrame):
     
     def create_text_entry(self, parent, param: V4L2Parameter, value_var: tk.StringVar, scale_control):
         """Create text entry field for direct value input alongside scale"""
+        # Text variable for the entry field
+        text_var = tk.StringVar(value=str(param.value))
+        
+        # Store reference for synchronization
+        if not hasattr(self, '_text_entry_vars'):
+            self._text_entry_vars = {}
+        self._text_entry_vars[param.name] = text_var
+        
         def on_text_change(event=None):
             try:
                 new_value = int(text_var.get())
@@ -279,7 +299,8 @@ class ParameterFrame(ttk.LabelFrame):
                 # Update both scale and display
                 scale_control.set(new_value)
                 value_var.set(str(new_value))
-                text_var.set(str(new_value))
+                if new_value != int(text_var.get()):  # Only update if clamped
+                    text_var.set(str(new_value))
                 self.parameter_changed_callback(param.name, new_value)
                 
             except ValueError:
@@ -339,6 +360,10 @@ class ParameterFrame(ttk.LabelFrame):
         for widget_info in self.parameter_widgets.values():
             widget_info['frame'].destroy()
         self.parameter_widgets.clear()
+        
+        # Clear text entry variables
+        if hasattr(self, '_text_entry_vars'):
+            self._text_entry_vars.clear()
         
         # Clear any existing widgets in scrollable frame
         for widget in self.scrollable_frame.winfo_children():

@@ -14,6 +14,34 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.15] - 2025-01-15
+
+### Behoben
+- **Slider-Text-Synchronisation** - Texteingabefeld aktualisiert sich jetzt beim Bewegen des Sliders
+- **Kameraauswahl-Fehler** - StringVar-Fehler bei der Kameraauswahl behoben
+- **Startup-Konfiguration-Dialog** - Tkinter Grab-Fehler beim Öffnen der Kamera-Konfiguration behoben
+- **Modal-Dialog-Problem** - Verzögertes grab_set() verhindert "window not viewable" Fehler
+
+### Verbessert
+- **Bidirektionale Parameter-Synchronisation** - Slider und Texteingabe sind vollständig synchronisiert
+- **Erweiterte Startup-Parameter-Konfiguration** - Bessere Übersicht und Eingabemöglichkeiten
+- **Parameter-Anzeige in Startup-Dialog** - Zeigt aktuelle Werte und Bereiche für bessere Orientierung
+- **Robuste Kamera-Auswahl** - Bessere Fehlerbehandlung bei ungültigen Auswahlformaten
+
+### Technisch
+- Text-Entry-Variablen-Synchronisation zwischen Slider und Eingabefeld
+- Verzögertes Modal-Grab für Startup-Konfigurationsdialoge (100ms delay)
+- Verbesserte StringVar-Behandlung in Kameraauswahl
+- Enhanced Parameter-Kontrollen in Startup-Konfiguration mit Bereichsanzeige
+- Automatische Cleanup-Funktionen für Text-Entry-Referenzen
+
+### UI/UX Verbesserungen
+- **Startup-Parameter-Dialog** mit aktuellen Werten und Bereichsangaben
+- **Slider-Text-Kombination** - Beide Eingabemethoden bleiben synchron
+- **Bessere Parameter-Übersicht** in Startup-Konfiguration
+- **Robuste Dialog-Behandlung** ohne Grab-Fehler
+- **Präzise Werte-Eingabe** mit Slider und Textfeld in Startup-Konfiguration
+
 ## [0.0.0.14] - 2025-01-15
 
 ### Hinzugefügt

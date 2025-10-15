@@ -333,9 +333,8 @@ class CameraConfigDialog:
         self.window.geometry("600x500")
         self.window.resizable(True, True)
         
-        # Make window modal
+        # Make window modal (after it's visible)
         self.window.transient(parent)
-        self.window.grab_set()
         
         # Parameter selections
         self.param_vars = {}
@@ -345,6 +344,16 @@ class CameraConfigDialog:
         
         # Center window
         self.center_window()
+        
+        # Set grab after window is fully created and visible
+        self.window.after(100, self.set_modal)
+    
+    def set_modal(self):
+        """Set modal grab after window is visible"""
+        try:
+            self.window.grab_set()
+        except tk.TclError as e:
+            logger.warning(f"Could not set modal grab: {e}")
     
     def center_window(self):
         """Center the window on parent"""
@@ -465,29 +474,69 @@ class CameraConfigDialog:
         checkbox = ttk.Checkbutton(frame, variable=include_var)
         checkbox.pack(side="left", padx=(0, 5))
         
-        # Parameter name
-        name_label = ttk.Label(frame, text=param.name, width=20)
+        # Parameter name with current value info
+        current_value = f" (current: {param.value})"
+        name_text = f"{param.name}{current_value}"
+        name_label = ttk.Label(frame, text=name_text, width=30)
         name_label.pack(side="left", padx=(0, 10))
         
-        # Value control
+        # Value control with better input options
         if param.param_type == "bool":
             value_var = tk.BooleanVar(value=bool(existing_value if existing_value is not None else param.value))
-            control = ttk.Checkbutton(frame, variable=value_var)
+            control = ttk.Checkbutton(frame, variable=value_var, text="Enable")
         elif param.min_val is not None and param.max_val is not None:
             value_var = tk.IntVar(value=existing_value if existing_value is not None else param.value)
-            control = ttk.Scale(
-                frame, 
+            
+            # Create a frame for scale and entry
+            control_frame = ttk.Frame(frame)
+            control_frame.pack(side="left", padx=(0, 10))
+            
+            # Scale control
+            scale = ttk.Scale(
+                control_frame, 
                 from_=param.min_val, 
                 to=param.max_val, 
                 variable=value_var,
                 orient="horizontal",
-                length=200
+                length=150
             )
+            scale.pack(side="left", padx=(0, 5))
+            
+            # Text entry for precise input
+            entry_var = tk.StringVar(value=str(value_var.get()))
+            entry = ttk.Entry(control_frame, textvariable=entry_var, width=8)
+            entry.pack(side="left")
+            
+            # Synchronize scale and entry
+            def sync_scale_to_entry():
+                try:
+                    val = int(entry_var.get())
+                    if param.min_val <= val <= param.max_val:
+                        value_var.set(val)
+                    else:
+                        entry_var.set(str(value_var.get()))
+                except ValueError:
+                    entry_var.set(str(value_var.get()))
+            
+            def sync_entry_to_scale(*args):
+                entry_var.set(str(value_var.get()))
+            
+            entry.bind('<Return>', lambda e: sync_scale_to_entry())
+            entry.bind('<FocusOut>', lambda e: sync_scale_to_entry())
+            value_var.trace('w', sync_entry_to_scale)
+            
+            # Range info
+            range_label = ttk.Label(control_frame, text=f"({param.min_val}-{param.max_val})", font=("Arial", 8))
+            range_label.pack(side="left", padx=(5, 0))
+            
+            control = control_frame
         else:
             value_var = tk.StringVar(value=str(existing_value if existing_value is not None else param.value))
-            control = ttk.Entry(frame, textvariable=value_var, width=10)
+            control = ttk.Entry(frame, textvariable=value_var, width=15)
         
-        control.pack(side="left", padx=(0, 10))
+        if param.param_type != "bool" and not (param.min_val is not None and param.max_val is not None):
+            control.pack(side="left", padx=(0, 10))
+            
         self.param_values[param.name] = value_var
         
         # Current value display

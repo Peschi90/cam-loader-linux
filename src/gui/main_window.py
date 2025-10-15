@@ -207,7 +207,15 @@ class CamLoaderMainWindow:
             return
         
         try:
+            # Ensure selection is a string (not StringVar)
+            if hasattr(selection, 'get'):
+                selection = selection.get()
+            
             # Extract device path from selection
+            if "(" not in selection or ")" not in selection:
+                logger.warning(f"Invalid camera selection format: {selection}")
+                return
+                
             device_path = selection.split("(")[1].split(")")[0]
             self.current_camera = self.camera_controller.get_camera(device_path)
             
