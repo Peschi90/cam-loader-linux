@@ -52,6 +52,10 @@ class CamLoaderMainWindow:
         self.root.title(f"CamLoader v{version} - V4L2 Camera Controller")
         self.root.geometry("900x1000")  # Taller window for vertical layout
         
+        # Start minimized if requested (must be before UI setup)
+        if start_minimized:
+            self.root.withdraw()  # Hide window immediately
+        
         # Controllers
         self.camera_controller = CameraController()
         self.config_manager = ConfigManager()
@@ -78,8 +82,9 @@ class CamLoaderMainWindow:
         # Setup window close handler
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         
-        # Start minimized if requested
+        # Show window if not started minimized
         if start_minimized:
+            self.root.deiconify()  # Show as minimized icon
             self.root.iconify()
     
     def setup_ui(self):

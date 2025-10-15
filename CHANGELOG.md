@@ -14,6 +14,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.21] - 2025-10-15
+
+### Behoben
+- **--minimized CLI Argument** - Anwendung startet jetzt korrekt minimiert
+- **Fenster-Sichtbarkeit** - window.withdraw() direkt nach Fenster-Erstellung
+- **Startup-Flow** - Minimized-Logik vor UI-Setup verschoben
+
+### Technisch
+- `withdraw()` direkt nach `tk.Tk()` Erstellung bei --minimized Flag
+- `deiconify()` + `iconify()` am Ende für korrekte Minimierung
+- Verhindert kurzes Aufblitzen des Fensters bei minimiertem Start
+
 ## [0.0.0.20] - 2025-01-15
 
 ### Behoben
