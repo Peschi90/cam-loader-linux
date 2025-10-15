@@ -14,6 +14,43 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.23] - 2025-10-15
+
+### Hinzugefügt
+- **📖 GitHub Repository Link** - Direkter Link im Help-Menu
+- **🐛 Report Issue** - GitHub Issue direkt aus Anwendung erstellen
+- **📁 Open Config Folder** - Konfigurationsverzeichnis öffnen (File-Menu)
+- **Erweiterter About-Dialog** - Größer (600x650) mit Scrollbar
+- **Config-Pfad-Anzeige** - Backup/Config-Speicherort im About-Dialog sichtbar
+- **Klickbare Links** - GitHub-Link im About-Dialog klickbar
+- **Modal About-Dialog** - grab_set() für bessere UX
+
+### Verbessert
+- **About-Dialog** - Von 500x400 auf 600x650 vergrößert
+- **Developer-Infos** - Besser lesbar mit mehr Abständen
+- **Feature-Liste** - Vollständig mit allen 10 Features
+- **Menu-Struktur** - GitHub & Issue-Links im Help-Menu
+- **README.md** - Komplett überarbeitet mit allen neuen Features
+  - CLI-Argumente dokumentiert
+  - Menu-Funktionen erklärt
+  - Config-Speicherort beschrieben
+  - Debug-Informationen hinzugefügt
+  - Support-Links aktualisiert
+  - Roadmap mit erledigten Features
+
+### Technisch
+- `open_github_repo()` - Öffnet Repository in Browser
+- `open_github_issue()` - Öffnet GitHub Issue-Seite
+- `open_config_folder()` - Platform-agnostisch (Linux/Windows/macOS)
+- Scrollbarer About-Dialog mit Canvas
+- Zentrierte Dialog-Positionierung
+
+### UX-Verbesserungen
+- **Zugriff auf Configs**: Jetzt 2 Wege (File-Menu + About-Dialog)
+- **Bug-Reporting**: 1-Klick GitHub Issue erstellen
+- **Transparenz**: Config-Speicherort immer sichtbar
+- **Hilfe**: Direkter Zugang zu Repository und Dokumentation
+
 ## [0.0.0.22] - 2025-10-15
 
 ### Behoben

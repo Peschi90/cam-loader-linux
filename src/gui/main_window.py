@@ -136,6 +136,8 @@ class CamLoaderMainWindow:
         file_menu.add_command(label="Save Configuration", command=self.save_config)
         file_menu.add_command(label="Load Configuration", command=self.load_config)
         file_menu.add_separator()
+        file_menu.add_command(label="Open Config Folder", command=self.open_config_folder)
+        file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.on_closing)
         
         # Camera menu
@@ -150,6 +152,9 @@ class CamLoaderMainWindow:
         # Help menu
         help_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Help", menu=help_menu)
+        help_menu.add_command(label="📖 GitHub Repository", command=self.open_github_repo)
+        help_menu.add_command(label="🐛 Report Issue", command=self.open_github_issue)
+        help_menu.add_separator()
         help_menu.add_command(label="About", command=self.show_about)
         help_menu.add_separator()
         help_menu.add_command(label="☕ Donate (Support Development)", command=self.open_donation_page)
@@ -417,81 +422,157 @@ class CamLoaderMainWindow:
         
         about_window = tk.Toplevel(self.root)
         about_window.title("About CamLoader")
-        about_window.geometry("500x400")
+        about_window.geometry("600x650")
         about_window.resizable(False, False)
         about_window.transient(self.root)
+        about_window.grab_set()  # Make dialog modal
+        
+        # Center window
+        about_window.update_idletasks()
+        x = (about_window.winfo_screenwidth() // 2) - (600 // 2)
+        y = (about_window.winfo_screenheight() // 2) - (650 // 2)
+        about_window.geometry(f"+{x}+{y}")
+        
+        # Create scrollable frame
+        canvas = tk.Canvas(about_window)
+        scrollbar = ttk.Scrollbar(about_window, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
         
         # Main frame
-        main_frame = ttk.Frame(about_window, padding="20")
+        main_frame = ttk.Frame(scrollable_frame, padding="20")
         main_frame.pack(fill="both", expand=True)
         
         # Title
         title_label = ttk.Label(
             main_frame, 
             text=f"CamLoader v{self.version}",
-            font=("Arial", 16, "bold")
+            font=("Arial", 18, "bold")
         )
         title_label.pack(pady=(0, 10))
         
         # Description
         desc_label = ttk.Label(
             main_frame,
-            text="A GUI application for controlling V4L2 camera parameters",
-            font=("Arial", 10)
+            text="A powerful GUI application for controlling V4L2 camera parameters",
+            font=("Arial", 11)
         )
         desc_label.pack(pady=(0, 20))
         
         # Features
-        features_frame = ttk.LabelFrame(main_frame, text="Features", padding="10")
-        features_frame.pack(fill="x", pady=(0, 20))
+        features_frame = ttk.LabelFrame(main_frame, text="Features", padding="15")
+        features_frame.pack(fill="x", pady=(0, 15))
         
         features = [
             "• Camera detection and selection",
-            "• Parameter control with live preview",
-            "• Configuration save/load",
-            "• Parameter backup/restore",
+            "• Real-time parameter control with live preview",
+            "• Configuration save/load system",
+            "• Parameter backup/restore functionality",
             "• Startup configuration management",
             "• Parameter tooltips and descriptions",
-            "• Parameter lock management",
-            "• Detachable preview window"
+            "• Parameter lock status visualization",
+            "• Detachable preview window",
+            "• CLI arguments support (--minimized, --debug, --version)",
+            "• Automatic configuration per camera"
         ]
         
         for feature in features:
-            ttk.Label(features_frame, text=feature).pack(anchor="w")
+            ttk.Label(features_frame, text=feature, font=("Arial", 9)).pack(anchor="w", pady=2)
         
-        # Author info
-        author_frame = ttk.LabelFrame(main_frame, text="Author", padding="10")
-        author_frame.pack(fill="x", pady=(0, 20))
+        # Developer info
+        dev_frame = ttk.LabelFrame(main_frame, text="Developer", padding="15")
+        dev_frame.pack(fill="x", pady=(0, 15))
         
         ttk.Label(
-            author_frame, 
+            dev_frame, 
             text="Developed by: I3uLL3t",
-            font=("Arial", 10, "bold")
-        ).pack(anchor="w")
+            font=("Arial", 11, "bold")
+        ).pack(anchor="w", pady=(0, 8))
+        
+        # GitHub link
+        github_frame = ttk.Frame(dev_frame)
+        github_frame.pack(fill="x", pady=(0, 8))
         
         ttk.Label(
-            author_frame,
-            text="GitHub: Peschi90/cam-loader-linux",
-            font=("Arial", 9)
-        ).pack(anchor="w", pady=(5, 0))
+            github_frame,
+            text="GitHub:",
+            font=("Arial", 9, "bold")
+        ).pack(side="left", padx=(0, 5))
+        
+        github_link = ttk.Label(
+            github_frame,
+            text="Peschi90/cam-loader-linux",
+            font=("Arial", 9, "underline"),
+            foreground="blue",
+            cursor="hand2"
+        )
+        github_link.pack(side="left")
+        github_link.bind("<Button-1>", lambda e: webbrowser.open("https://github.com/Peschi90/cam-loader-linux"))
+        
+        # Config directory
+        config_dir_frame = ttk.Frame(dev_frame)
+        config_dir_frame.pack(fill="x")
+        
+        ttk.Label(
+            config_dir_frame,
+            text="Config/Backup Location:",
+            font=("Arial", 9, "bold")
+        ).pack(anchor="w", pady=(0, 5))
+        
+        config_path = str(self.config_manager.config_dir)
+        config_label = ttk.Label(
+            config_dir_frame,
+            text=config_path,
+            font=("Arial", 8),
+            foreground="gray"
+        )
+        config_label.pack(anchor="w", pady=(0, 5))
+        
+        open_folder_btn = ttk.Button(
+            config_dir_frame,
+            text="📁 Open Config Folder",
+            command=self.open_config_folder
+        )
+        open_folder_btn.pack(anchor="w")
+        
+        # Links frame
+        links_frame = ttk.LabelFrame(main_frame, text="Links & Support", padding="15")
+        links_frame.pack(fill="x", pady=(0, 15))
+        
+        # Report issue button
+        issue_btn = ttk.Button(
+            links_frame,
+            text="🐛 Report Issue on GitHub",
+            command=self.open_github_issue
+        )
+        issue_btn.pack(fill="x", pady=(0, 8))
         
         # Donation button
-        donate_frame = ttk.Frame(main_frame)
-        donate_frame.pack(fill="x", pady=(0, 10))
-        
-        def open_paypal():
-            webbrowser.open("https://paypal.me/i3ull3t")
-        
         donate_btn = ttk.Button(
-            donate_frame,
+            links_frame,
             text="☕ Support this project (PayPal)",
-            command=open_paypal
+            command=lambda: webbrowser.open("https://paypal.me/i3ull3t")
         )
-        donate_btn.pack()
+        donate_btn.pack(fill="x")
         
         # Close button
-        close_btn = ttk.Button(about_window, text="Close", command=about_window.destroy)
-        close_btn.pack(pady=(0, 10))
+        close_btn = ttk.Button(
+            main_frame, 
+            text="Close", 
+            command=about_window.destroy
+        )
+        close_btn.pack(pady=(10, 0))
+        
+        # Pack canvas and scrollbar
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
         
         # Center window
         about_window.update_idletasks()
@@ -509,6 +590,41 @@ class CamLoaderMainWindow:
         import webbrowser
         webbrowser.open("https://paypal.me/i3ull3t")
         self.status_var.set("Opening donation page... Thank you for your support!")
+    
+    def open_github_repo(self):
+        """Open GitHub repository in browser"""
+        import webbrowser
+        webbrowser.open("https://github.com/Peschi90/cam-loader-linux")
+        self.status_var.set("Opening GitHub repository...")
+    
+    def open_github_issue(self):
+        """Open GitHub issues page in browser"""
+        import webbrowser
+        issue_url = "https://github.com/Peschi90/cam-loader-linux/issues/new"
+        webbrowser.open(issue_url)
+        self.status_var.set("Opening GitHub issue page...")
+    
+    def open_config_folder(self):
+        """Open configuration folder in file manager"""
+        import subprocess
+        import platform
+        
+        config_path = str(self.config_manager.config_dir)
+        
+        try:
+            system = platform.system()
+            if system == "Linux":
+                subprocess.run(["xdg-open", config_path])
+            elif system == "Windows":
+                subprocess.run(["explorer", config_path])
+            elif system == "Darwin":  # macOS
+                subprocess.run(["open", config_path])
+            
+            self.status_var.set(f"Opened config folder: {config_path}")
+            logger.info(f"Opened config folder: {config_path}")
+        except Exception as e:
+            logger.error(f"Failed to open config folder: {e}")
+            messagebox.showerror("Error", f"Failed to open config folder: {e}")
     
     def show_startup_config(self):
         """Show startup configuration window"""
