@@ -38,7 +38,7 @@ class CamLoaderMainWindow:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("CamLoader - V4L2 Camera Controller")
-        self.root.geometry("1200x800")
+        self.root.geometry("900x1000")  # Taller window for vertical layout
         
         # Controllers
         self.camera_controller = CameraController()
@@ -71,8 +71,9 @@ class CamLoaderMainWindow:
         # Configure grid weights
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
-        main_frame.columnconfigure(1, weight=1)
-        main_frame.rowconfigure(1, weight=1)
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.rowconfigure(1, weight=2)  # Parameters get more space
+        main_frame.rowconfigure(2, weight=1)  # Preview gets less space
         
         # Camera selection frame
         self.create_camera_selection_frame(main_frame)
@@ -145,13 +146,13 @@ class CamLoaderMainWindow:
     
     def create_control_panels(self, parent):
         """Create main control panels"""
-        # Left panel - Parameters
+        # Parameters panel - now on top
         self.parameter_frame = ParameterFrame(parent, self.on_parameter_changed)
-        self.parameter_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 5))
+        self.parameter_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 10))
         
-        # Right panel - Preview
+        # Preview panel - now below parameters
         self.preview_frame = PreviewFrame(parent)
-        self.preview_frame.grid(row=1, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(5, 0))
+        self.preview_frame.grid(row=2, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
     
     def create_status_bar(self):
         """Create status bar"""
@@ -162,7 +163,7 @@ class CamLoaderMainWindow:
             relief=tk.SUNKEN, 
             anchor=tk.W
         )
-        status_bar.grid(row=1, column=0, sticky=(tk.W, tk.E))
+        status_bar.grid(row=2, column=0, sticky=(tk.W, tk.E))
     
     def refresh_cameras(self):
         """Refresh available cameras"""

@@ -1,6 +1,6 @@
 """
-Preview Frame
-GUI frame for displaying live camera preview
+Detached Preview Window
+Separate movable window for camera preview
 """
 
 import tkinter as tk
@@ -25,25 +25,42 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-class PreviewFrame(ttk.LabelFrame):
-    """Frame for displaying live camera preview"""
+class DetachedPreviewWindow:
+    """Detached preview window for camera feed"""
     
-    def __init__(self, parent):
-        super().__init__(parent, text="Live Preview", padding="10")
+    def __init__(self, parent, preview_frame):
+        self.parent = parent
+        self.preview_frame = preview_frame
         
-        self.camera_device: Optional[str] = None
-        self.cap: Optional[cv2.VideoCapture] = None
-        self.preview_running = False
-        self.preview_thread: Optional[threading.Thread] = None
-        self.detached_window = None
+        # Create window
+        self.window = tk.Toplevel(parent)
+        self.window.title("Camera Preview")
+        self.window.geometry("480x400")
+        self.window.minsize(320, 240)
         
+        # Set up UI
         self.setup_ui()
+        
+        # Transfer preview to this window
+        self.transfer_preview()
+        
+        # Handle window closing
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
+        # Make window resizable and movable
+        self.window.resizable(True, True)
+        
+        logger.info("Opened detached preview window")
     
     def setup_ui(self):
-        """Setup the preview interface"""
+        """Setup the detached preview interface"""
+        # Main frame
+        main_frame = ttk.Frame(self.window, padding="5")
+        main_frame.pack(fill="both", expand=True)
+        
         # Control frame
-        control_frame = ttk.Frame(self)
-        control_frame.pack(fill="x", pady=(0, 10))
+        control_frame = ttk.Frame(main_frame)
+        control_frame.pack(fill="x", pady=(0, 5))
         
         # Start/Stop buttons
         self.start_button = ttk.Button(
@@ -61,42 +78,57 @@ class PreviewFrame(ttk.LabelFrame):
         )
         self.stop_button.pack(side="left", padx=(0, 5))
         
-        # Detach button
-        self.detach_button = ttk.Button(
+        # Attach button to return preview to main window
+        self.attach_button = ttk.Button(
             control_frame,
-            text="Detach Preview",
-            command=self.detach_preview
+            text="Attach to Main",
+            command=self.attach_to_main
         )
-        self.detach_button.pack(side="left", padx=(5, 0))
+        self.attach_button.pack(side="right")
         
         # Resolution info
         self.resolution_var = tk.StringVar(value="No preview")
         resolution_label = ttk.Label(control_frame, textvariable=self.resolution_var)
-        resolution_label.pack(side="right")
+        resolution_label.pack(side="right", padx=(0, 10))
         
         # Preview area
-        self.preview_frame = ttk.Frame(self, relief="sunken", borderwidth=2)
-        self.preview_frame.pack(fill="both", expand=True)
+        self.preview_container = ttk.Frame(main_frame, relief="sunken", borderwidth=2)
+        self.preview_container.pack(fill="both", expand=True)
         
         # Preview label
         self.preview_label = ttk.Label(
-            self.preview_frame, 
+            self.preview_container, 
             text="No preview available\\nClick 'Start Preview' to begin",
             anchor="center",
             font=("Arial", 12)
         )
         self.preview_label.pack(expand=True, fill="both")
-    
-    def set_camera(self, device_path: str):
-        """Set the camera device for preview"""
-        if self.preview_running:
-            self.stop_preview()
         
-        self.camera_device = device_path
-        logger.info(f"Preview camera set to: {device_path}")
+        # Copy camera state from original preview
+        self.camera_device = self.preview_frame.camera_device
+        self.cap = None
+        self.preview_running = False
+        self.preview_thread = None
+    
+    def transfer_preview(self):
+        """Transfer preview from main window to this detached window"""
+        # Stop preview in main window if running
+        was_running = self.preview_frame.preview_running
+        if was_running:
+            self.preview_frame.stop_preview()
+        
+        # Transfer camera device
+        self.camera_device = self.preview_frame.camera_device
+        
+        # Hide main preview frame
+        self.preview_frame.pack_forget()
+        
+        # Start preview in detached window if it was running
+        if was_running and self.camera_device:
+            self.start_preview()
     
     def start_preview(self):
-        """Start the camera preview"""
+        """Start the camera preview in detached window"""
         if not CV2_AVAILABLE:
             self.preview_label.config(
                 text="Preview not available\\nOpenCV (cv2) not installed\\nInstall with: pip install opencv-python"
@@ -142,10 +174,10 @@ class PreviewFrame(ttk.LabelFrame):
             self.start_button.config(state="disabled")
             self.stop_button.config(state="normal")
             
-            logger.info(f"Started preview for {self.camera_device}")
+            logger.info(f"Started detached preview for {self.camera_device}")
             
         except Exception as e:
-            logger.error(f"Failed to start preview: {e}")
+            logger.error(f"Failed to start detached preview: {e}")
             self.preview_running = False
             if self.cap:
                 self.cap.release()
@@ -181,7 +213,7 @@ class PreviewFrame(ttk.LabelFrame):
         self.start_button.config(state="normal")
         self.stop_button.config(state="disabled")
         
-        logger.info("Stopped camera preview")
+        logger.info("Stopped detached camera preview")
     
     def _preview_loop(self):
         """Main preview loop running in separate thread"""
@@ -199,11 +231,27 @@ class PreviewFrame(ttk.LabelFrame):
                 # Get frame dimensions
                 height, width = frame.shape[:2]
                 
-                # Resize frame to fit preview area
-                preview_width = 400
-                preview_height = int(height * preview_width / width)
-                
-                frame_resized = cv2.resize(frame, (preview_width, preview_height))
+                # Get current window size for dynamic resizing
+                try:
+                    window_width = self.preview_container.winfo_width()
+                    window_height = self.preview_container.winfo_height()
+                    
+                    # Calculate scale to fit window while maintaining aspect ratio
+                    scale_w = (window_width - 20) / width  # 20px padding
+                    scale_h = (window_height - 20) / height
+                    scale = min(scale_w, scale_h, 1.0)  # Don't scale up
+                    
+                    preview_width = int(width * scale)
+                    preview_height = int(height * scale)
+                    
+                    if preview_width > 50 and preview_height > 50:  # Minimum size check
+                        frame_resized = cv2.resize(frame, (preview_width, preview_height))
+                    else:
+                        frame_resized = cv2.resize(frame, (400, 300))  # Fallback size
+                        
+                except:
+                    # Fallback if window size can't be determined
+                    frame_resized = cv2.resize(frame, (400, 300))
                 
                 # Convert BGR to RGB
                 frame_rgb = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB)
@@ -223,7 +271,7 @@ class PreviewFrame(ttk.LabelFrame):
                 time.sleep(1/30)  # ~30 FPS
                 
             except Exception as e:
-                logger.error(f"Error in preview loop: {e}")
+                logger.error(f"Error in detached preview loop: {e}")
                 time.sleep(0.1)
     
     def _update_preview(self, photo, width, height):
@@ -239,32 +287,41 @@ class PreviewFrame(ttk.LabelFrame):
             self.preview_label.config(text=f"Camera active\\n{width}x{height}\\n(Image display requires PIL)")
             self.resolution_var.set(f"{width}x{height}")
     
-    def detach_preview(self):
-        """Detach preview to separate window"""
-        if self.detached_window is not None:
-            # Window already exists, bring it to front
-            try:
-                self.detached_window.window.lift()
-                self.detached_window.window.focus_force()
-                return
-            except:
-                # Window was closed, reset reference
-                self.detached_window = None
+    def attach_to_main(self):
+        """Attach preview back to main window"""
+        # Stop preview in detached window
+        was_running = self.preview_running
+        if was_running:
+            self.stop_preview()
         
+        # Show main preview frame again
+        self.preview_frame.pack(fill="both", expand=True)
+        
+        # Start preview in main window if it was running
+        if was_running:
+            self.preview_frame.start_preview()
+        
+        # Close detached window
+        self.on_closing()
+    
+    def on_closing(self):
+        """Handle window closing"""
+        # Stop preview
+        self.stop_preview()
+        
+        # Show main preview frame again if not already visible
         try:
-            from gui.detached_preview import DetachedPreviewWindow
-            
-            # Get the root window
-            root_window = self.winfo_toplevel()
-            
-            # Create detached window
-            self.detached_window = DetachedPreviewWindow(root_window, self)
-            
-            logger.info("Created detached preview window")
-            
-        except Exception as e:
-            logger.error(f"Failed to create detached preview window: {e}")
+            if not self.preview_frame.winfo_viewable():
+                self.preview_frame.pack(fill="both", expand=True)
+        except:
+            pass
+        
+        # Destroy window
+        self.window.destroy()
+        
+        logger.info("Closed detached preview window")
     
     def __del__(self):
         """Cleanup when object is destroyed"""
-        self.stop_preview()
+        if hasattr(self, 'preview_running'):
+            self.stop_preview()

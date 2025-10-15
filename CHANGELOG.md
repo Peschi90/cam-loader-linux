@@ -14,6 +14,35 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.14] - 2025-01-15
+
+### Hinzugefügt
+- **Abtrennbares Preview-Fenster** - Preview kann in separates, verschiebbares Fenster ausgelagert werden
+- **Neue Layout-Anordnung** - Parameter oberhalb der Vorschau für mehr Platz
+- **"Detach Preview" Button** - Preview-Fenster kann von der Hauptanwendung getrennt werden
+- **Bewegliches Preview-Fenster** - Vollständig frei positionierbar und größenveränderbar
+- **"Attach to Main" Funktion** - Preview-Fenster kann wieder in Hauptanwendung eingebettet werden
+
+### Verbessert
+- **Mehr Platz für Parameter** - Vertikale Anordnung gibt Parametern mehr Raum
+- **Flexiblere Fenster-Verwaltung** - Preview kann je nach Bedarf angezeigt werden
+- **Bessere Arbeitsbereich-Nutzung** - Hauptfenster kann ohne Preview genutzt werden
+- **Dynamische Größenanpassung** - Preview-Fenster passt sich an Inhalt an
+
+### Technisch
+- DetachedPreviewWindow-Klasse für eigenständiges Preview-Fenster
+- Erweiterte PreviewFrame mit Detach/Attach-Funktionalität
+- Überarbeitete MainWindow-Layout-Struktur (vertikal statt horizontal)
+- Intelligente Preview-State-Übertragung zwischen Fenstern
+- Automatische Fenster-Management und Cleanup-Funktionen
+
+### UI/UX Verbesserungen
+- Vertikales Haupt-Layout für bessere Parameter-Übersicht
+- "Detach Preview" Button in Preview-Kontrollbereich
+- Eigenständige Preview-Fenster mit Start/Stop/Attach-Kontrollen
+- Anpassbare Fenstergröße und freie Positionierung
+- Automatisches Preview-State-Management zwischen Fenstern
+
 ## [0.0.0.13] - 2025-01-15
 
 ### Hinzugefügt
