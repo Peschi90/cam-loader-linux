@@ -14,6 +14,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.3] - 2025-10-15
+
+### Behoben
+- **PyInstaller Build-Fehler** durch fehlenden data-Ordner
+- **Workflow-Optimierung** mit reduzierten System-Dependencies für schnellere Builds
+- **Conditional Data Directory** Inclusion für robustere Spec-File-Generierung
+
+### Technisch
+- Spec-File jetzt mit OS-Überprüfung für data-Verzeichnis
+- Vereinfachte apt-get Installationen (nur notwendige Pakete)
+- Verbesserte Fehlerbehandlung im Build-Prozess
+
 ## [0.0.0.2] - 2025-10-15
 
 ### Verbessert
