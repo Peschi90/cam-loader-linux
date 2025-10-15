@@ -14,7 +14,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
-## [1.0.0] - 2025-10-15
+## [0.0.0.1] - 2025-10-15
 
 ### Hinzugefügt
 - **GUI-Anwendung** mit tkinter für benutzerfreundliche Bedienung
