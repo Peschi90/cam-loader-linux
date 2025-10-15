@@ -14,6 +14,25 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.8] - 2025-01-15
+
+### Behoben
+- **GLIBC-Kompatibilitätsproblem** gelöst durch Verwendung von Ubuntu 20.04 und Python 3.9
+- **"GLIBC_2.38 not found" Fehler** behoben für ältere Debian/Ubuntu-Systeme
+- **Bessere Systemkompatibilität** durch ältere Build-Umgebung
+- **Erweiterte GLIBC-Checks** im Debug-Wrapper hinzugefügt
+
+### Geändert
+- **Build-Umgebung** von Ubuntu-latest auf Ubuntu 20.04 geändert
+- **Python-Version** von 3.11 auf 3.9 reduziert für bessere Kompatibilität
+- **Debug-Logging** in PyInstaller aktiviert
+- **Erweiterte System-Informationen** im Debug-Wrapper
+
+### Technisch
+- Ubuntu 20.04 verwendet GLIBC 2.31 (kompatibel mit Debian 10+)
+- Python 3.9 hat niedrigere Systemanforderungen als 3.11
+- Verbesserte Kompatibilitätsprüfungen vor Release
+
 ## [0.0.0.7] - 2025-01-15
 
 ### Behoben

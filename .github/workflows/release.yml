@@ -99,7 +99,7 @@ jobs:
         generate_release_notes: false
 
   build-linux-x86_64:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04  # Use older Ubuntu for better GLIBC compatibility
     needs: create-release
     
     steps:
@@ -109,7 +109,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.9'  # Use Python 3.9 for better GLIBC compatibility
 
     - name: Install system dependencies
       run: |
@@ -184,8 +184,14 @@ jobs:
         )
         EOF
         
-        # Build the executable
-        pyinstaller camloader.spec --clean --noconfirm
+        # Build the executable with compatibility flags
+        pyinstaller camloader.spec --clean --noconfirm --log-level=DEBUG
+        
+        # Create additional compatibility info
+        echo "=== Build Environment Info ==="
+        lsb_release -a
+        python --version
+        ldd --version
         
         # Create a debug wrapper script
         cat << 'EOF' > dist/camloader-debug.sh
@@ -194,9 +200,17 @@ jobs:
         echo "=== CamLoader Debug Startup ==="
         echo "Architecture: $(uname -m)"
         echo "Distribution: $(lsb_release -d 2>/dev/null || echo 'Unknown')"
+        echo "Kernel: $(uname -r)"
         echo "Python in PATH: $(which python3 2>/dev/null || echo 'Not found')"
         echo "Current directory: $(pwd)"
         echo "Executable permissions: $(ls -la camloader-linux-x86_64)"
+        
+        echo "=== GLIBC Version Check ==="
+        echo "System GLIBC: $(ldd --version | head -1)"
+        if command -v getconf >/dev/null 2>&1; then
+            echo "GNU_LIBC_VERSION: $(getconf GNU_LIBC_VERSION 2>/dev/null || echo 'Unknown')"
+        fi
+        
         echo "=== Checking dependencies ==="
         
         # Check for required libraries
@@ -240,7 +254,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.9'  # Use Python 3.9 for better GLIBC compatibility
 
     - name: Install build dependencies
       run: |
