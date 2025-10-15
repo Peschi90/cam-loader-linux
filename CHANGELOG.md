@@ -14,6 +14,32 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.16] - 2025-01-15
+
+### Behoben
+- **Kritischer Kameraauswahl-Fehler** - StringVar-Fehler komplett behoben mit robuster String-Konvertierung
+- **Verbesserte Fehlerbehandlung** - Detaillierter Traceback für bessere Fehlerdiagnose
+- **Config-Loading-Schutz** - Zusätzliche Typ-Prüfungen beim Laden von Kamera-Konfigurationen
+- **Parse-Error-Behandlung** - Sichere Device-Path-Extraktion mit Try-Catch
+
+### Verbessert
+- **Robuste String-Konvertierung** - Explizite str() Konvertierung für alle Kamera-Auswahlen
+- **Type-Safe Config-Loading** - isinstance() Prüfungen für alle Config-Zugriffe
+- **Detailliertes Error-Logging** - Vollständige Tracebacks für besseres Debugging
+- **Sichere Index-Zugriffe** - IndexError und AttributeError werden abgefangen
+
+### Technisch
+- Explizite str() Konvertierung in on_camera_selected()
+- Try-Catch um device_path split() Operationen
+- isinstance() Prüfungen für config, parameters und param_data
+- Vollständige traceback.format_exc() in Error-Logs
+- Robuste Fehlerbehandlung in allen kritischen Pfaden
+
+### Debugging-Verbesserungen
+- **Erweiterte Stack-Traces** - Vollständige Fehlerinformationen im Log
+- **Parse-Error-Details** - Genaue Fehlerquelle bei Device-Path-Parsing
+- **Type-Validation** - Explizite Typ-Prüfungen vor kritischen Operationen
+
 ## [0.0.0.15] - 2025-01-15
 
 ### Behoben

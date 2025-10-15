@@ -202,21 +202,26 @@ class CamLoaderMainWindow:
     
     def on_camera_selected(self, event=None):
         """Handle camera selection"""
-        selection = self.camera_combo.get()
-        if not selection:
-            return
-        
         try:
-            # Ensure selection is a string (not StringVar)
-            if hasattr(selection, 'get'):
-                selection = selection.get()
+            selection = self.camera_combo.get()
+            if not selection:
+                return
+            
+            # Convert to string to handle StringVar or string
+            selection = str(selection)
             
             # Extract device path from selection
             if "(" not in selection or ")" not in selection:
                 logger.warning(f"Invalid camera selection format: {selection}")
                 return
+            
+            # Parse device path safely
+            try:
+                device_path = selection.split("(")[1].split(")")[0]
+            except (IndexError, AttributeError) as parse_error:
+                logger.error(f"Failed to parse device path from: {selection}, error: {parse_error}")
+                return
                 
-            device_path = selection.split("(")[1].split(")")[0]
             self.current_camera = self.camera_controller.get_camera(device_path)
             
             if self.current_camera:
@@ -233,7 +238,8 @@ class CamLoaderMainWindow:
                 logger.info(f"Selected camera: {self.current_camera}")
             
         except Exception as e:
-            logger.error(f"Failed to select camera: {e}")
+            import traceback
+            logger.error(f"Failed to select camera: {e}\n{traceback.format_exc()}")
             self.status_var.set("Error selecting camera")
             messagebox.showerror("Error", f"Failed to select camera: {e}")
     
@@ -342,24 +348,28 @@ class CamLoaderMainWindow:
         
         try:
             config = self.config_manager.get_camera_config(self.current_camera.device_path)
-            if config:
+            if config and isinstance(config, dict):
                 # Apply configuration to camera
-                for param_name, param_data in config.get('parameters', {}).items():
-                    if param_name in self.current_camera.parameters:
-                        value = param_data.get('value')
-                        if value is not None:
-                            self.camera_controller.set_parameter(
-                                self.current_camera.device_path,
-                                param_name,
-                                value
-                            )
+                parameters = config.get('parameters', {})
+                if isinstance(parameters, dict):
+                    for param_name, param_data in parameters.items():
+                        if param_name in self.current_camera.parameters:
+                            if isinstance(param_data, dict):
+                                value = param_data.get('value')
+                                if value is not None:
+                                    self.camera_controller.set_parameter(
+                                        self.current_camera.device_path,
+                                        param_name,
+                                        value
+                                    )
                 
                 # Refresh parameter display
                 self.parameter_frame.refresh_parameters()
                 self.status_var.set("Configuration loaded")
                 
         except Exception as e:
-            logger.warning(f"Failed to load camera configuration: {e}")
+            import traceback
+            logger.warning(f"Failed to load camera configuration: {e}\n{traceback.format_exc()}")
     
     def show_about(self):
         """Show about dialog"""
