@@ -14,6 +14,26 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.7] - 2025-01-15
+
+### Behoben
+- **Debian/Ubuntu Kompatibilität** verbessert für ausführbare Datei
+- **PyInstaller-Konfiguration** mit erweiterten tkinter und OpenCV Abhängigkeiten
+- **Debug-Modus aktiviert** mit Console-Output für bessere Fehlerdiagnose
+- **Debug-Wrapper-Script** für Troubleshooting hinzugefügt
+
+### Hinzugefügt
+- **TROUBLESHOOTING.md** mit umfangreicher Anleitung für Debian-Systeme
+- **Debug-Script** (`camloader-debug.sh`) für Systemanalyse
+- **Erweiterte Abhängigkeits-Checks** im Build-Prozess
+- **Bessere Fehlerbehandlung** mit detaillierteren Logs
+
+### Technisch
+- Console-Modus aktiviert (`console=True`) für Debug-Ausgaben
+- Zusätzliche tkinter-Module für bessere GUI-Kompatibilität
+- Ausgeschlossene große Bibliotheken (matplotlib, scipy) für kleinere Dateigröße
+- Verbesserte Library-Dependency-Checks
+
 ## [0.0.0.6] - 2025-01-15
 
 ### Behoben

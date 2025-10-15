@@ -148,13 +148,16 @@ jobs:
             datas=datas,
             hiddenimports=[
                 'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox',
-                'PIL', 'PIL.Image', 'PIL.ImageTk', 'cv2', 'logging', 'json',
-                'threading', 'subprocess', 'pathlib', 'datetime', 'platform'
+                'tkinter.constants', 'tkinter.font', '_tkinter',
+                'PIL', 'PIL.Image', 'PIL.ImageTk', 'PIL._tkinter_finder',
+                'cv2', 'cv2.cv2', 'numpy', 'logging', 'json',
+                'threading', 'subprocess', 'pathlib', 'datetime', 'platform',
+                'pkg_resources', 'pkg_resources.py2_warn'
             ],
             hookspath=[],
             hooksconfig={},
             runtime_hooks=[],
-            excludes=[],
+            excludes=['matplotlib', 'scipy', 'pandas', 'IPython'],
             win_no_prefer_redirects=False,
             win_private_assemblies=False,
             cipher=None,
@@ -166,13 +169,13 @@ jobs:
         exe = EXE(
             pyz, a.scripts, a.binaries, a.zipfiles, a.datas, [],
             name='camloader-linux-x86_64',
-            debug=False,
+            debug=True,
             bootloader_ignore_signals=False,
             strip=False,
             upx=False,
             upx_exclude=[],
             runtime_tmpdir=None,
-            console=False,
+            console=True,
             disable_windowed_traceback=False,
             argv_emulation=False,
             target_arch=None,
@@ -184,15 +187,46 @@ jobs:
         # Build the executable
         pyinstaller camloader.spec --clean --noconfirm
         
+        # Create a debug wrapper script
+        cat << 'EOF' > dist/camloader-debug.sh
+        #!/bin/bash
+        # Debug wrapper for camloader
+        echo "=== CamLoader Debug Startup ==="
+        echo "Architecture: $(uname -m)"
+        echo "Distribution: $(lsb_release -d 2>/dev/null || echo 'Unknown')"
+        echo "Python in PATH: $(which python3 2>/dev/null || echo 'Not found')"
+        echo "Current directory: $(pwd)"
+        echo "Executable permissions: $(ls -la camloader-linux-x86_64)"
+        echo "=== Checking dependencies ==="
+        
+        # Check for required libraries
+        if command -v ldd >/dev/null 2>&1; then
+            echo "Library dependencies:"
+            ldd camloader-linux-x86_64 2>/dev/null || echo "ldd check failed"
+        fi
+        
+        echo "=== Attempting to start CamLoader ==="
+        exec ./camloader-linux-x86_64 "$@"
+        EOF
+        
+        chmod +x dist/camloader-debug.sh
+        
         # Verify and test
         ls -la dist/
         chmod +x dist/camloader-linux-x86_64
+        
+        # Test if the executable can at least start
+        echo "=== Testing executable startup ==="
+        file dist/camloader-linux-x86_64
+        ldd dist/camloader-linux-x86_64 || echo "ldd check failed - might be static"
 
     - name: Upload x86_64 executable
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ needs.create-release.outputs.tag_name }}
-        files: dist/camloader-linux-x86_64
+        files: |
+          dist/camloader-linux-x86_64
+          dist/camloader-debug.sh
         token: ${{ secrets.GITHUB_TOKEN }}
 
   build-source-package:
