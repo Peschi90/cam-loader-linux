@@ -14,6 +14,13 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.4] - 2025-10-15
+
+### Fixed
+- Added .gitkeep file to preserve data directory structure for PyInstaller builds
+- Ensured data directory is properly included in Git repository
+- Fixed PyInstaller build failing due to missing data directory
+
 ## [0.0.0.3] - 2025-10-15
 
 ### Behoben
