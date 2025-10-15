@@ -46,9 +46,10 @@ def show_messagebox(func, *args, **kwargs):
 class CamLoaderMainWindow:
     """Main application window"""
     
-    def __init__(self):
+    def __init__(self, start_minimized=False, version="0.0.0"):
+        self.version = version
         self.root = tk.Tk()
-        self.root.title("CamLoader - V4L2 Camera Controller")
+        self.root.title(f"CamLoader v{version} - V4L2 Camera Controller")
         self.root.geometry("900x1000")  # Taller window for vertical layout
         
         # Controllers
@@ -69,6 +70,10 @@ class CamLoaderMainWindow:
         
         # Setup window close handler
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
+        # Start minimized if requested
+        if start_minimized:
+            self.root.iconify()
     
     def setup_ui(self):
         """Setup the user interface"""
@@ -127,6 +132,8 @@ class CamLoaderMainWindow:
         help_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Help", menu=help_menu)
         help_menu.add_command(label="About", command=self.show_about)
+        help_menu.add_separator()
+        help_menu.add_command(label="☕ Donate (Support Development)", command=self.open_donation_page)
     
     def create_camera_selection_frame(self, parent):
         """Create camera selection frame"""
@@ -393,18 +400,102 @@ class CamLoaderMainWindow:
     
     def show_about(self):
         """Show about dialog"""
-        messagebox.showinfo(
-            "About CamLoader",
-            "CamLoader v1.1.0\\n\\n"
-            "A GUI application for controlling V4L2 camera parameters.\\n\\n"
-            "Features:\\n"
-            "• Camera detection and selection\\n"
-            "• Parameter control with live preview\\n"
-            "• Configuration save/load\\n"
-            "• Parameter backup/restore\\n"
-            "• Startup configuration management\\n"
-            "• Parameter tooltips and descriptions"
+        import webbrowser
+        
+        about_window = tk.Toplevel(self.root)
+        about_window.title("About CamLoader")
+        about_window.geometry("500x400")
+        about_window.resizable(False, False)
+        about_window.transient(self.root)
+        
+        # Main frame
+        main_frame = ttk.Frame(about_window, padding="20")
+        main_frame.pack(fill="both", expand=True)
+        
+        # Title
+        title_label = ttk.Label(
+            main_frame, 
+            text=f"CamLoader v{self.version}",
+            font=("Arial", 16, "bold")
         )
+        title_label.pack(pady=(0, 10))
+        
+        # Description
+        desc_label = ttk.Label(
+            main_frame,
+            text="A GUI application for controlling V4L2 camera parameters",
+            font=("Arial", 10)
+        )
+        desc_label.pack(pady=(0, 20))
+        
+        # Features
+        features_frame = ttk.LabelFrame(main_frame, text="Features", padding="10")
+        features_frame.pack(fill="x", pady=(0, 20))
+        
+        features = [
+            "• Camera detection and selection",
+            "• Parameter control with live preview",
+            "• Configuration save/load",
+            "• Parameter backup/restore",
+            "• Startup configuration management",
+            "• Parameter tooltips and descriptions",
+            "• Parameter lock management",
+            "• Detachable preview window"
+        ]
+        
+        for feature in features:
+            ttk.Label(features_frame, text=feature).pack(anchor="w")
+        
+        # Author info
+        author_frame = ttk.LabelFrame(main_frame, text="Author", padding="10")
+        author_frame.pack(fill="x", pady=(0, 20))
+        
+        ttk.Label(
+            author_frame, 
+            text="Developed by: I3uLL3t",
+            font=("Arial", 10, "bold")
+        ).pack(anchor="w")
+        
+        ttk.Label(
+            author_frame,
+            text="GitHub: Peschi90/cam-loader-linux",
+            font=("Arial", 9)
+        ).pack(anchor="w", pady=(5, 0))
+        
+        # Donation button
+        donate_frame = ttk.Frame(main_frame)
+        donate_frame.pack(fill="x", pady=(0, 10))
+        
+        def open_paypal():
+            webbrowser.open("https://paypal.me/i3ull3t")
+        
+        donate_btn = ttk.Button(
+            donate_frame,
+            text="☕ Support this project (PayPal)",
+            command=open_paypal
+        )
+        donate_btn.pack()
+        
+        # Close button
+        close_btn = ttk.Button(about_window, text="Close", command=about_window.destroy)
+        close_btn.pack(pady=(0, 10))
+        
+        # Center window
+        about_window.update_idletasks()
+        x = (about_window.winfo_screenwidth() // 2) - (about_window.winfo_width() // 2)
+        y = (about_window.winfo_screenheight() // 2) - (about_window.winfo_height() // 2)
+        about_window.geometry(f"+{x}+{y}")
+        
+        # Set modal and bring to front
+        about_window.after(100, lambda: about_window.grab_set())
+        about_window.lift()
+        about_window.focus_force()
+    
+    def open_donation_page(self):
+        """Open donation page in browser"""
+        import webbrowser
+        webbrowser.open("https://paypal.me/i3ull3t")
+        self.status_var.set("Opening donation page... Thank you for your support!")
     
     def show_startup_config(self):
         """Show startup configuration window"""
@@ -429,7 +520,10 @@ class CamLoaderMainWindow:
             
             applied_count = 0
             for device_path, config in startup_configs.items():
+                logger.info(f"Processing startup config for device: {device_path}")
+                
                 if not config.get("enabled", False):
+                    logger.info(f"Startup config disabled for {device_path}, skipping")
                     continue
                 
                 camera = self.camera_controller.get_camera(device_path)
@@ -437,17 +531,22 @@ class CamLoaderMainWindow:
                     logger.warning(f"Startup config: Camera {device_path} not found")
                     continue
                 
+                logger.info(f"Applying startup config to {device_path} ({camera.name})")
                 success_count = 0
                 total_count = 0
                 
                 for param_name, param_value in config.get("parameters", {}).items():
                     total_count += 1
+                    logger.debug(f"Setting {param_name}={param_value} on {device_path}")
                     if self.camera_controller.set_parameter(device_path, param_name, param_value):
                         success_count += 1
+                        logger.debug(f"Successfully set {param_name} on {device_path}")
+                    else:
+                        logger.warning(f"Failed to set {param_name} on {device_path}")
                 
                 if total_count > 0:
                     applied_count += 1
-                    logger.info(f"Applied startup config for {camera.name}: {success_count}/{total_count} parameters")
+                    logger.info(f"Applied startup config for {device_path} ({camera.name}): {success_count}/{total_count} parameters")
             
             if applied_count > 0:
                 self.status_var.set(f"Applied startup configurations for {applied_count} cameras")

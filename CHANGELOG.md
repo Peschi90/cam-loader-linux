@@ -14,6 +14,63 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.19] - 2025-01-15
+
+### Hinzugefügt
+- **CLI-Argumente** - Kommandozeilen-Unterstützung für verschiedene Start-Optionen
+- **Minimized Start** - `--minimized` oder `-m` startet Anwendung minimiert
+- **Debug-Modus** - `--debug` aktiviert Debug-Logging
+- **Version-Anzeige** - `--version` zeigt Version an, auch im Fenstertitel sichtbar
+- **Erweiterter About-Dialog** - Zeigt Autor (I3uLL3t), Features und Version
+- **Spendenbutton** - PayPal.me/i3ull3t Link im About-Dialog und Help-Menü
+- **Detailliertes Startup-Logging** - Device-Path in allen Startup-Config-Logs
+
+### Verbessert
+- **Startup-Configuration-Logging** - Zeigt jetzt device_path für jede Kamera
+- **Parameter-Set-Logging** - DEBUG-Level zeigt jeden Parameter mit device_path
+- **About-Dialog** - Vollständiges Fenster statt einfacher MessageBox
+- **Versionsverwaltung** - Zentrale __version__ Variable in main.py
+- **Logger-Setup** - Unterstützt jetzt logging.Level Integer-Parameter
+
+### Technisch
+- argparse für CLI-Argument-Verarbeitung
+- __version__ = "0.0.0.19" in main.py
+- start_minimized Parameter für MainWindow
+- version Parameter durchgereicht an MainWindow
+- Detailliertes Logging: device_path in allen Startup-Config-Nachrichten
+- webbrowser.open() für PayPal-Link
+- Zentralisierte Versions-Anzeige im Fenstertitel
+
+### UI/UX Verbesserungen
+- **About-Dialog mit PayPal-Button** - "☕ Support this project"
+- **Help-Menü mit Donate-Option** - Direkter Zugang zu Spenden-Link
+- **Versionsnummer im Titel** - "CamLoader v0.0.0.19 - V4L2 Camera Controller"
+- **Detaillierte Feature-Liste** - Alle Features im About-Dialog aufgelistet
+- **Author-Sektion** - "Developed by: I3uLL3t" mit GitHub-Link
+
+### CLI-Nutzung
+```bash
+# Normal starten
+python src/main.py
+
+# Minimiert starten
+python src/main.py --minimized
+
+# Mit Debug-Logging
+python src/main.py --debug
+
+# Version anzeigen
+python src/main.py --version
+```
+
+### Logging-Verbesserungen
+- "Processing startup config for device: /dev/videoX"
+- "Startup config disabled for /dev/videoX, skipping"
+- "Applying startup config to /dev/videoX (CameraName)"
+- "Setting param=value on /dev/videoX" (DEBUG)
+- "Successfully set param on /dev/videoX" (DEBUG)
+- "Failed to set param on /dev/videoX" (WARNING)
+
 ## [0.0.0.18] - 2025-01-15
 
 ### Behoben
