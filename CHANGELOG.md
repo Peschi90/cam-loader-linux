@@ -14,6 +14,25 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.9] - 2025-01-15
+
+### Behoben
+- **Ubuntu 20.04 Runner-Problem** gelöst durch Verwendung von Ubuntu 18.04 Container
+- **GLIBC-Kompatibilität** verbessert durch ältere Build-Umgebung (GLIBC 2.27)
+- **Statische Verlinkung** mit staticx für bessere Portabilität hinzugefügt
+- **Build-Umgebung** korrigiert für verfügbare GitHub Actions Runner
+
+### Geändert
+- **Container-basiertes Build** mit Ubuntu 18.04 für maximale Kompatibilität
+- **Python 3.9** Installation aus deadsnakes PPA
+- **Staticx-Integration** für statisch verlinkte Binaries
+- **Erweiterte Dependency-Installation** für ältere Ubuntu-Basis
+
+### Technisch
+- Ubuntu 18.04 Container mit GLIBC 2.27 (kompatibel mit Debian 9+)
+- Fallback auf statische Verlinkung wenn verfügbar
+- Verbesserte Package-Installation für Container-Umgebung
+
 ## [0.0.0.8] - 2025-01-15
 
 ### Behoben
