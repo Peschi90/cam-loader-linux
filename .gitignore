@@ -26,11 +26,23 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# CamLoader Configuration Ignore
+/data/configs/*.json
+/data/logs/
+
+# Release build artifacts
+/test_release_env/
+release_notes.txt
+camloader-v*-test/
+camloader-v*-test.tar.gz
+test_changelog_extract.py
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
-*.spec
+# Keep our spec file
+# *.spec
 
 # Installer logs
 pip-log.txt

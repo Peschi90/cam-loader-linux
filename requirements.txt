@@ -1,0 +1,18 @@
+# Required Python packages for CamLoader
+# Core GUI and imaging
+Pillow>=8.0.0
+opencv-python>=4.5.0
+
+# System interaction
+psutil>=5.8.0
+
+# Build dependencies (for PyInstaller builds)
+pyinstaller>=6.0.0
+
+# Optional: Enhanced V4L2 control (if available)
+# python-v4l2capture>=1.6  # Uncomment if available in your distribution
+
+# Development dependencies (optional, install with: pip install -e .[dev])
+# pytest>=6.0.0
+# black>=21.0.0
+# flake8>=3.8.0

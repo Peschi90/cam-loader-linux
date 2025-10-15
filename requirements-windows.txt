@@ -1,0 +1,18 @@
+# Requirements for Windows testing/development
+# Note: This is a minimal set for GUI testing on Windows
+# For full functionality, use Linux with v4l-utils
+
+# Core GUI (tkinter is included with Python on Windows)
+
+# Optional: Image processing (for preview functionality)
+# opencv-python>=4.5.0
+# Pillow>=8.0.0
+
+# System interaction
+# psutil>=5.8.0
+
+# Note: To install OpenCV for testing:
+# pip install opencv-python
+
+# Note: To install PIL for image support:
+# pip install Pillow
