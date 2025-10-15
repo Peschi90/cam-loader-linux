@@ -14,6 +14,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.5] - 2025-10-15
+
+### Behoben
+- **Release Notes** werden jetzt korrekt aus CHANGELOG.md extrahiert und in GitHub Releases angezeigt
+- **Workflow-Verbesserung** mit robustem Changelog-Parsing und besserer Fehlerbehandlung
+- **Debugging** für Release-Erstellung hinzugefügt
+
+### Technisch
+- Changelog-Parsing von Regex auf manuelle Zeilenverarbeitung umgestellt
+- Bessere Behandlung von gemischten deutschen/englischen Inhalten
+- Fallback-Content für fehlende oder leere Changelog-Abschnitte
+
 ## [0.0.0.4] - 2025-10-15
 
 ### Fixed

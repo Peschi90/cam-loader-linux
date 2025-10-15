@@ -24,7 +24,7 @@ else:
 
 setup(
     name="camloader",
-    version="0.0.0.4",
+    version="0.0.0.5",
     author="Your Name",
     author_email="your.email@example.com",
     description="A GUI application for controlling V4L2 camera parameters",
