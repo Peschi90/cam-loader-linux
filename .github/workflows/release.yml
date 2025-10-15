@@ -139,6 +139,7 @@ jobs:
         # -*- mode: python ; coding: utf-8 -*-
         import sys
         from pathlib import Path
+        import os
         
         # Add src directory to Python path
         src_path = Path.cwd() / 'src'
@@ -146,13 +147,16 @@ jobs:
         
         block_cipher = None
         
+        # Check if data directory exists and include it if it does
+        datas = []
+        if os.path.exists('data'):
+            datas.append(('data', 'data'))
+        
         a = Analysis(
             ['src/main.py'],
             pathex=[str(src_path)],
             binaries=[],
-            datas=[
-                ('data', 'data'),
-            ],
+            datas=datas,
             hiddenimports=[
                 'tkinter',
                 'tkinter.ttk',
