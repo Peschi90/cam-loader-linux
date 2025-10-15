@@ -28,6 +28,7 @@ from camera.controller import CameraController, CameraDevice
 from config.manager import ConfigManager
 from gui.parameter_frame import ParameterFrame
 from gui.preview_frame import PreviewFrame
+from gui.startup_config import StartupConfigWindow
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,9 @@ class CamLoaderMainWindow:
         
         # Load saved configurations
         self.load_saved_configs()
+        
+        # Apply startup configurations
+        self.apply_startup_configurations()
         
         # Setup window close handler
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -101,6 +105,8 @@ class CamLoaderMainWindow:
         camera_menu.add_command(label="Refresh Cameras", command=self.refresh_cameras)
         camera_menu.add_command(label="Backup Parameters", command=self.backup_parameters)
         camera_menu.add_command(label="Restore Parameters", command=self.restore_parameters)
+        camera_menu.add_separator()
+        camera_menu.add_command(label="Startup Configuration...", command=self.show_startup_config)
         
         # Help menu
         help_menu = tk.Menu(menubar, tearoff=0)
@@ -165,7 +171,13 @@ class CamLoaderMainWindow:
             cameras = self.camera_controller.get_cameras()
             
             # Update combo box
-            camera_names = [str(camera) for camera in cameras]
+            camera_names = []
+            for camera in cameras:
+                name = str(camera)
+                if not camera.is_available:
+                    name += " [No Preview]"
+                camera_names.append(name)
+            
             self.camera_combo['values'] = camera_names
             
             if cameras:
@@ -341,14 +353,65 @@ class CamLoaderMainWindow:
         """Show about dialog"""
         messagebox.showinfo(
             "About CamLoader",
-            "CamLoader v1.0.0\\n\\n"
+            "CamLoader v1.1.0\\n\\n"
             "A GUI application for controlling V4L2 camera parameters.\\n\\n"
             "Features:\\n"
             "• Camera detection and selection\\n"
             "• Parameter control with live preview\\n"
             "• Configuration save/load\\n"
-            "• Parameter backup/restore"
+            "• Parameter backup/restore\\n"
+            "• Startup configuration management\\n"
+            "• Parameter tooltips and descriptions"
         )
+    
+    def show_startup_config(self):
+        """Show startup configuration window"""
+        try:
+            StartupConfigWindow(self.root, self.camera_controller, self.config_manager)
+        except Exception as e:
+            logger.error(f"Failed to open startup configuration: {e}")
+            messagebox.showerror("Error", f"Failed to open startup configuration: {e}")
+    
+    def apply_startup_configurations(self):
+        """Apply startup configurations on application start"""
+        try:
+            from pathlib import Path
+            import json
+            
+            config_path = Path.home() / ".camloader" / "startup_config.json"
+            if not config_path.exists():
+                return
+            
+            with open(config_path, 'r') as f:
+                startup_configs = json.load(f)
+            
+            applied_count = 0
+            for device_path, config in startup_configs.items():
+                if not config.get("enabled", False):
+                    continue
+                
+                camera = self.camera_controller.get_camera(device_path)
+                if not camera:
+                    logger.warning(f"Startup config: Camera {device_path} not found")
+                    continue
+                
+                success_count = 0
+                total_count = 0
+                
+                for param_name, param_value in config.get("parameters", {}).items():
+                    total_count += 1
+                    if self.camera_controller.set_parameter(device_path, param_name, param_value):
+                        success_count += 1
+                
+                if total_count > 0:
+                    applied_count += 1
+                    logger.info(f"Applied startup config for {camera.name}: {success_count}/{total_count} parameters")
+            
+            if applied_count > 0:
+                self.status_var.set(f"Applied startup configurations for {applied_count} cameras")
+                
+        except Exception as e:
+            logger.warning(f"Failed to apply startup configurations: {e}")
     
     def on_closing(self):
         """Handle application closing"""

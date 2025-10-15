@@ -9,8 +9,54 @@ import logging
 from typing import Optional, Callable
 
 from camera.controller import CameraDevice, V4L2Parameter
+from utils.parameter_tooltips import get_parameter_tooltip
 
 logger = logging.getLogger(__name__)
+
+class ToolTip:
+    """Simple tooltip implementation"""
+    
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tooltip_window = None
+        self.widget.bind("<Enter>", self.on_enter)
+        self.widget.bind("<Leave>", self.on_leave)
+    
+    def on_enter(self, event=None):
+        self.show_tooltip()
+    
+    def on_leave(self, event=None):
+        self.hide_tooltip()
+    
+    def show_tooltip(self):
+        if self.tooltip_window or not self.text:
+            return
+        
+        x, y, _, _ = self.widget.bbox("insert") if hasattr(self.widget, 'bbox') else (0, 0, 0, 0)
+        x += self.widget.winfo_rootx() + 25
+        y += self.widget.winfo_rooty() + 25
+        
+        self.tooltip_window = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(True)
+        tw.wm_geometry(f"+{x}+{y}")
+        
+        label = tk.Label(
+            tw, 
+            text=self.text, 
+            justify='left',
+            background="#ffffe0", 
+            relief='solid', 
+            borderwidth=1,
+            font=("Arial", 9),
+            wraplength=300
+        )
+        label.pack(ipadx=1)
+    
+    def hide_tooltip(self):
+        if self.tooltip_window:
+            self.tooltip_window.destroy()
+            self.tooltip_window = None
 
 class ParameterFrame(ttk.LabelFrame):
     """Frame for displaying and controlling camera parameters"""
@@ -91,22 +137,41 @@ class ParameterFrame(ttk.LabelFrame):
         frame = ttk.Frame(self.scrollable_frame)
         frame.pack(fill="x", pady=2)
         
-        # Parameter name label
+        # Parameter name label with tooltip
         name_label = ttk.Label(frame, text=param.name, width=15)
         name_label.pack(side="left", padx=(0, 10))
         
-        # Value display
+        # Add tooltip to the parameter name
+        tooltip_text = get_parameter_tooltip(param.name)
+        ToolTip(name_label, tooltip_text)
+        
+        # Current value display (always shows actual value)
         value_var = tk.StringVar(value=str(param.value))
-        value_label = ttk.Label(frame, textvariable=value_var, width=8)
-        value_label.pack(side="right", padx=(10, 0))
         
         # Create appropriate control widget
         if param.param_type == "bool":
             control = self.create_boolean_control(frame, param, value_var)
+            # For boolean, no additional text entry needed
+            value_label = ttk.Label(frame, textvariable=value_var, width=8)
+            value_label.pack(side="right", padx=(10, 0))
+            # Add tooltip to control
+            ToolTip(control, tooltip_text)
         elif param.min_val is not None and param.max_val is not None:
+            # Scale control with text entry
             control = self.create_scale_control(frame, param, value_var)
+            # Add text entry field for direct input
+            text_entry = self.create_text_entry(frame, param, value_var, control)
+            # Add tooltips to controls
+            ToolTip(control, tooltip_text)
+            ToolTip(text_entry, f"{tooltip_text}\n\nRange: {param.min_val} - {param.max_val}")
         else:
+            # Just text entry for parameters without min/max
             control = self.create_entry_control(frame, param, value_var)
+            # Value display for entry-only controls
+            value_label = ttk.Label(frame, textvariable=value_var, width=8)
+            value_label.pack(side="right", padx=(10, 0))
+            # Add tooltip to control
+            ToolTip(control, tooltip_text)
         
         # Store references
         self.parameter_widgets[param.name] = {
@@ -129,12 +194,47 @@ class ParameterFrame(ttk.LabelFrame):
             to=param.max_val,
             orient="horizontal",
             command=on_scale_change,
-            length=200
+            length=150  # Reduced to make room for text entry
         )
         scale.set(param.value)
-        scale.pack(side="left", fill="x", expand=True, padx=(0, 10))
+        scale.pack(side="left", fill="x", expand=True, padx=(0, 5))
         
         return scale
+    
+    def create_text_entry(self, parent, param: V4L2Parameter, value_var: tk.StringVar, scale_control):
+        """Create text entry field for direct value input alongside scale"""
+        def on_text_change(event=None):
+            try:
+                new_value = int(text_var.get())
+                # Validate range
+                if param.min_val is not None and new_value < param.min_val:
+                    new_value = param.min_val
+                elif param.max_val is not None and new_value > param.max_val:
+                    new_value = param.max_val
+                
+                # Update both scale and display
+                scale_control.set(new_value)
+                value_var.set(str(new_value))
+                text_var.set(str(new_value))
+                self.parameter_changed_callback(param.name, new_value)
+                
+            except ValueError:
+                # Reset to current value if invalid input
+                text_var.set(str(param.value))
+        
+        # Text variable for the entry field
+        text_var = tk.StringVar(value=str(param.value))
+        
+        # Create entry field
+        entry = ttk.Entry(parent, textvariable=text_var, width=6)
+        entry.bind("<Return>", on_text_change)
+        entry.bind("<FocusOut>", on_text_change)
+        entry.pack(side="right", padx=(5, 0))
+        
+        # Store text_var reference for updates
+        self.parameter_widgets[param.name + "_text_var"] = text_var
+        
+        return entry
     
     def create_boolean_control(self, parent, param: V4L2Parameter, value_var: tk.StringVar):
         """Create checkbox control for boolean parameters"""

@@ -14,6 +14,34 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.12] - 2025-01-15
+
+### Hinzugefügt
+- **Erweiterte Kamera-Erkennung** - Überprüfung ob Kameras Preview-fähig sind
+- **Text-Eingabefelder** für direkte Werteingabe neben Schiebereglern
+- **Parameter-Tooltips** mit englischen Erklärungen für alle Kamera-Parameter
+- **Startup-Konfiguration-Menü** zur Auswahl welche Kameras beim Start konfiguriert werden
+- **Nicht-funktionale Kamera-Kennzeichnung** mit "[No Preview]" Markierung
+
+### Verbessert
+- **Kamera-Erkennung** prüft jetzt v4l2-ctl --list-formats für tatsächliche Funktionalität
+- **Parameter-Kontrollen** mit kombinierten Schieberegler + Texteingabe
+- **Benutzerfreundlichkeit** durch informative Tooltips mit Parameterbeschreibungen
+- **Automatische Konfiguration** beim Anwendungsstart für definierte Kameras
+
+### Technisch
+- Neue Hilfsmethoden: _is_capture_device(), _check_preview_capability()
+- Parameter-Tooltip-System mit umfangreicher Beschreibungsdatenbank
+- StartupConfigWindow für grafische Konfigurationsverwaltung
+- Erweiterte Kamera-Verfügbarkeitsprüfungen
+- JSON-basierte Startup-Konfigurationsspeicherung
+
+### Neue Features
+- **Startup Configuration Dialog** - Vollständige GUI für Kamera-Startup-Einstellungen
+- **Parameter Range Validation** - Automatische Wertebereichsprüfung in Texteingaben
+- **Camera Capability Detection** - Unterscheidung zwischen existierenden und funktionalen Kameras
+- **Enhanced Tooltips** - Über 30 detaillierte Parameter-Erklärungen in englischer Sprache
+
 ## [0.0.0.11] - 2025-01-15
 
 ### Behoben

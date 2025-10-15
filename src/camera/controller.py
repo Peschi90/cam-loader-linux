@@ -92,6 +92,48 @@ class CameraController:
             logger.error(f"Command failed: {' '.join(command)}, Error: {e}")
             return False, ""
     
+    def _is_capture_device(self, device_path: str) -> bool:
+        """Check if device is a video capture device"""
+        try:
+            success, output = self._run_v4l2_command([
+                "v4l2-ctl", "--device", device_path, "--list-formats"
+            ])
+            
+            if success and output:
+                # Check if it has capture formats
+                return "Video Capture" in output or "Type: Video Capture" in output
+            
+            return False
+        except Exception:
+            return False
+    
+    def _check_preview_capability(self, device_path: str) -> bool:
+        """Check if camera supports preview/streaming"""
+        try:
+            # Check supported formats
+            success, output = self._run_v4l2_command([
+                "v4l2-ctl", "--device", device_path, "--list-formats-ext"
+            ])
+            
+            if not success:
+                return False
+            
+            # Look for common video formats
+            common_formats = ['YUYV', 'MJPG', 'RGB', 'YUV', 'H264', 'VP8', 'VP9']
+            for fmt in common_formats:
+                if fmt in output:
+                    return True
+            
+            # Also check if device responds to capability query
+            success, output = self._run_v4l2_command([
+                "v4l2-ctl", "--device", device_path, "--all"
+            ])
+            
+            return success and len(output.strip()) > 0
+            
+        except Exception:
+            return False
+    
     def _detect_cameras(self):
         """Detect available V4L2 cameras"""
         logger.info("Detecting cameras...")
@@ -105,18 +147,24 @@ class CameraController:
                 "contrast": V4L2Parameter("contrast", 64, 0, 127, 1),
                 "saturation": V4L2Parameter("saturation", 64, 0, 127, 1),
             }
+            dummy_camera.is_available = True
             self.cameras["dummy0"] = dummy_camera
             return
         
         # Find video devices (Linux only)
         video_devices = []
-        for i in range(10):  # Check /dev/video0 to /dev/video9
+        for i in range(20):  # Check /dev/video0 to /dev/video19
             device_path = f"/dev/video{i}"
             if Path(device_path).exists():
                 video_devices.append(device_path)
         
         for device_path in video_devices:
             try:
+                # First check if device supports video capture
+                if not self._is_capture_device(device_path):
+                    logger.debug(f"Skipping {device_path} - not a capture device")
+                    continue
+                
                 # Get device info
                 success, output = self._run_v4l2_command([
                     "v4l2-ctl", "--device", device_path, "--info"
@@ -128,8 +176,12 @@ class CameraController:
                     device_name = name_match.group(1).strip() if name_match else f"Camera {device_path}"
                     
                     camera = CameraDevice(device_path, device_name)
+                    
+                    # Check if camera has preview capability
+                    camera.is_available = self._check_preview_capability(device_path)
+                    
                     self.cameras[device_path] = camera
-                    logger.info(f"Found camera: {camera}")
+                    logger.info(f"Found camera: {camera} (Preview: {'Yes' if camera.is_available else 'No'})")
                     
                     # Load initial parameters
                     self._load_camera_parameters(camera)
