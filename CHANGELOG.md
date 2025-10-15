@@ -14,6 +14,27 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.2] - 2025-10-15
+
+### Verbessert
+- **GitHub Actions Workflow** komplett überarbeitet für bessere Zuverlässigkeit
+- **Build-System** mit moderneren GitHub Actions und robusteren Pfad-Behandlung
+- **PyInstaller-Konfiguration** für optimierte Linux-Builds
+- **Package-Erstellung** mit automatischen Install-Scripts und Desktop-Integration
+- **Changelog-Extraktion** mit verbesserter Fehlerbehandlung
+
+### Behoben
+- Hardcodierte Datei-Pfade in GitHub Actions Workflow
+- Deprecated GitHub Actions durch moderne Versionen ersetzt
+- Robuste Artefakt-Erkennung für dynamische Dateinamen
+- Upload-Fehler bei Release-Assets durch bessere Pfad-Auflösung
+
+### Technisch
+- Verwendung von `softprops/action-gh-release@v2` statt deprecated Actions
+- Dynamische Paket-Erkennung in Build-Pipeline
+- Verbesserter Xvfb-Setup für headless GUI-Builds
+- Separate Jobs für bessere Fehler-Isolation
+
 ## [0.0.0.1] - 2025-10-15
 
 ### Hinzugefügt
