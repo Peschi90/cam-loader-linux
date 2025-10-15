@@ -14,6 +14,25 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.11] - 2025-01-15
+
+### Behoben
+- **Python-Version-Problem** - Build verwendete immer noch Python 3.11 statt 3.8
+- **GLIBC 2.38 Abhängigkeit** durch Downgrade auf Python 3.8 eliminiert
+- **Explizite Python-Interpreter-Verwendung** in allen Build-Schritten
+- **PyInstaller Python-Version-Verifikation** hinzugefügt
+
+### Geändert
+- **Python-Version** von 3.9 auf 3.8 reduziert für maximale Kompatibilität
+- **Konsistente Python-Verwendung** (python statt python3) im gesamten Workflow
+- **Build-Logging** erweitert um Python-Version-Informationen
+- **Explizite Pfad-Verifikation** für Python-Interpreter
+
+### Technisch
+- Python 3.8 hat deutlich niedrigere GLIBC-Anforderungen
+- Konsistente Verwendung des setup-python konfigurierten Interpreters
+- Verbesserte Debug-Ausgaben für Python-Version-Tracking
+
 ## [0.0.0.10] - 2025-01-15
 
 ### Behoben
