@@ -99,8 +99,7 @@ jobs:
         generate_release_notes: false
 
   build-linux-x86_64:
-    runs-on: ubuntu-22.04
-    container: ubuntu:18.04  # Use older Ubuntu container for better GLIBC compatibility
+    runs-on: ubuntu-22.04  # Use modern runner but build for maximum compatibility
     needs: create-release
     
     steps:
@@ -114,25 +113,19 @@ jobs:
 
     - name: Install system dependencies
       run: |
-        apt-get update
-        apt-get install -y software-properties-common wget curl git
-        add-apt-repository ppa:deadsnakes/ppa
-        apt-get update
-        apt-get install -y python3.9 python3.9-dev python3.9-venv python3.9-distutils
-        apt-get install -y python3-tk build-essential xvfb patchelf
+        sudo apt-get update
+        sudo apt-get install -y python3-tk python3-dev build-essential xvfb patchelf fuse libfuse2
         
-        # Install pip for Python 3.9
-        curl https://bootstrap.pypa.io/get-pip.py | python3.9
-        
-        # Create symlinks
-        ln -sf /usr/bin/python3.9 /usr/bin/python3
-        ln -sf /usr/bin/python3.9 /usr/bin/python
+        # Download AppImage tools for maximum compatibility
+        wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x appimagetool-x86_64.AppImage
+        sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
 
     - name: Install Python dependencies
       run: |
-        python3.9 -m pip install --upgrade pip
-        python3.9 -m pip install -r requirements.txt
-        python3.9 -m pip install staticx  # For static linking to improve compatibility
+        python3 -m pip install --upgrade pip
+        pip3 install -r requirements.txt
+        pip3 install pyinstaller staticx
 
     - name: Create x86_64 executable
       run: |
@@ -198,21 +191,65 @@ jobs:
         EOF
         
         # Build the executable with compatibility flags
-        python3.9 -m PyInstaller camloader.spec --clean --noconfirm --log-level=DEBUG
+        python3 -m PyInstaller camloader.spec --clean --noconfirm --log-level=DEBUG
         
         # Try to create a more compatible version using staticx
         echo "=== Creating statically linked version ==="
         if staticx dist/camloader-linux-x86_64 dist/camloader-linux-x86_64-static 2>/dev/null; then
             echo "Static version created successfully"
             mv dist/camloader-linux-x86_64-static dist/camloader-linux-x86_64
+            echo "Replaced with static version"
         else
-            echo "Static linking failed, using original version"
+            echo "Static linking failed, trying AppImage approach..."
+            
+            # Create AppDir structure for AppImage
+            mkdir -p AppDir/usr/bin
+            cp dist/camloader-linux-x86_64 AppDir/usr/bin/
+            
+            # Create AppImage desktop entry
+            cat > AppDir/camloader.desktop << EOF
+        [Desktop Entry]
+        Type=Application
+        Name=CamLoader
+        Exec=camloader-linux-x86_64
+        Icon=camloader
+        Categories=Multimedia;Video;
+        EOF
+            
+            # Create a simple icon (text-based)
+            mkdir -p AppDir/usr/share/pixmaps
+            cat > AppDir/usr/share/pixmaps/camloader.svg << EOF
+        <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+          <rect width="64" height="64" fill="#2196F3"/>
+          <text x="32" y="38" fill="white" text-anchor="middle" font-family="Arial" font-size="16">CAM</text>
+        </svg>
+        EOF
+            
+            # Create AppRun script
+            cat > AppDir/AppRun << EOF
+        #!/bin/bash
+        cd "\$(dirname "\$0")"
+        exec ./usr/bin/camloader-linux-x86_64 "\$@"
+        EOF
+            chmod +x AppDir/AppRun
+            
+            # Build AppImage if tools are available
+            if command -v appimagetool >/dev/null 2>&1; then
+                echo "Creating AppImage..."
+                appimagetool AppDir dist/camloader-linux-x86_64.AppImage 2>/dev/null || echo "AppImage creation failed"
+                if [ -f dist/camloader-linux-x86_64.AppImage ]; then
+                    mv dist/camloader-linux-x86_64.AppImage dist/camloader-linux-x86_64
+                    echo "AppImage created successfully"
+                fi
+            else
+                echo "AppImage tools not available, using original binary"
+            fi
         fi
         
         # Create additional compatibility info
         echo "=== Build Environment Info ==="
         lsb_release -a
-        python3.9 --version
+        python3 --version
         ldd --version
         
         # Create a debug wrapper script

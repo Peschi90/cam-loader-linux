@@ -14,6 +14,31 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.10] - 2025-01-15
+
+### Behoben
+- **Container GLIBC-Problem** gelöst durch Rückkehr zu Standard Ubuntu 22.04 Runner
+- **GitHub Actions Node.js Kompatibilität** - Ubuntu 18.04 Container nicht mit Actions kompatibel
+- **Mehrschichtige Kompatibilitätsstrategie** implementiert (staticx → AppImage → Standard)
+- **AppImage-Unterstützung** für maximale Linux-Distribution-Kompatibilität hinzugefügt
+
+### Hinzugefügt
+- **Staticx-Integration** für statische Verlinkung als primäre Lösung
+- **AppImage-Fallback** für Situationen wo staticx nicht funktioniert
+- **Erweiterte Compatibility-Pipeline** mit mehreren Fallback-Strategien
+- **AppImage-Tools** Installation für portable Anwendungen
+
+### Geändert
+- **Build-Strategie** von Container-basiert zu Multi-Fallback-Ansatz
+- **Kompatibilitäts-Layer** mit drei verschiedenen Ansätzen
+- **Bessere Fehlerbehandlung** bei Build-Problemen
+
+### Technisch
+- Standard Ubuntu 22.04 Runner mit modernen GitHub Actions
+- Fallback-Kette: staticx → AppImage → Standard PyInstaller
+- AppImage für universelle Linux-Kompatibilität
+- Automatische Erkennung der besten verfügbaren Methode
+
 ## [0.0.0.9] - 2025-01-15
 
 ### Behoben
