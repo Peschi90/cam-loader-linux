@@ -45,27 +45,47 @@ jobs:
         def extract_changelog(version):
             try:
                 with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
-                    content = f.read()
+                    lines = f.readlines()
                 
-                # Pattern to match version sections
-                # Matches: ## [1.0.0] - 2023-10-15 or ## [1.0.0]
-                version_pattern = rf'##\s*\[{re.escape(version)}\].*?\n(.*?)(?=\n##|\n#|\Z)'
+                print(f"Looking for version: {version}", file=sys.stderr)
                 
-                match = re.search(version_pattern, content, re.DOTALL | re.MULTILINE)
+                # Manual approach - find the line and extract content until next ##
+                start_index = -1
+                for i, line in enumerate(lines):
+                    if f'## [{version}]' in line:
+                        start_index = i
+                        print(f"Found version at line {i}: {line.strip()}", file=sys.stderr)
+                        break
                 
-                if match:
-                    changelog_text = match.group(1).strip()
-                    # Clean up the changelog text
-                    changelog_text = re.sub(r'^\s*\n', '', changelog_text)
-                    changelog_text = re.sub(r'\n\s*$', '', changelog_text)
-                    return changelog_text
-                else:
-                    return f"Release notes for version {version}"
-                    
+                if start_index == -1:
+                    print("Version not found", file=sys.stderr)
+                    return f"Release {version}\n\nChanges and improvements in this version."
+                
+                # Extract content from next line until next ## or end
+                content_lines = []
+                for i in range(start_index + 1, len(lines)):
+                    line = lines[i]
+                    if line.startswith('## [') and f'[{version}]' not in line:
+                        print(f"End section found at line {i}: {line.strip()}", file=sys.stderr)
+                        break
+                    content_lines.append(line.rstrip())
+                
+                # Join and clean
+                content = '\n'.join(content_lines).strip()
+                
+                print(f"Extracted {len(content_lines)} lines, {len(content)} characters", file=sys.stderr)
+                
+                if len(content.strip()) < 10:
+                    return f"Release {version}\n\nChanges and improvements in this version."
+                
+                return content
+                
             except FileNotFoundError:
-                return f"Release notes for version {version}\n\nNo changelog file found."
+                print("CHANGELOG.md not found", file=sys.stderr)
+                return f"Release {version}\n\nNo changelog file found."
             except Exception as e:
-                return f"Release notes for version {version}\n\nError reading changelog: {str(e)}"
+                print(f"Error reading changelog: {str(e)}", file=sys.stderr)
+                return f"Release {version}\n\nError reading changelog: {str(e)}"
         
         if __name__ == "__main__":
             version = sys.argv[1]
@@ -74,16 +94,23 @@ jobs:
         EOF
         
         # Extract changelog and save to file
-        python extract_changelog.py "$VERSION" > release_notes.txt
+        echo "Extracting changelog for version: $VERSION"
+        python extract_changelog.py "$VERSION" > release_notes.txt 2>changelog_debug.log
         
-        # Also save as output (truncated for GitHub)
-        CHANGELOG=$(python extract_changelog.py "$VERSION" | head -c 8000)
-        echo "changelog<<EOF" >> $GITHUB_OUTPUT
-        echo "$CHANGELOG" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        # Show debug information
+        echo "Debug output:"
+        cat changelog_debug.log
         
-        echo "Extracted changelog:"
+        echo "Extracted release notes:"
         cat release_notes.txt
+        
+        # Verify the file has content
+        if [ ! -s release_notes.txt ]; then
+          echo "Warning: release_notes.txt is empty, creating fallback content"
+          echo "Release $VERSION" > release_notes.txt
+          echo "" >> release_notes.txt
+          echo "Changes and improvements in this version." >> release_notes.txt
+        fi
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -95,6 +122,8 @@ jobs:
         draft: false
         prerelease: ${{ contains(steps.get_version.outputs.tag_name, '-') }}
         token: ${{ secrets.GITHUB_TOKEN }}
+        fail_on_unmatched_files: false
+        generate_release_notes: false  # We provide our own release notes
 
     - name: Upload release notes artifact
       uses: actions/upload-artifact@v4
