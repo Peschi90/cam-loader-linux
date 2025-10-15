@@ -11,7 +11,7 @@ import argparse
 from pathlib import Path
 
 # Application version
-__version__ = "0.0.0.21"
+__version__ = "0.0.0.22"
 
 # Add src directory to Python path
 src_dir = Path(__file__).parent

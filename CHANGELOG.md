@@ -14,6 +14,23 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.22] - 2025-10-15
+
+### Behoben
+- **--minimized unter Linux** - Funktioniert jetzt korrekt mit X11/Wayland Window Managern
+- **update_idletasks()** - Zwingt tkinter zur Kommunikation mit Window Manager
+- **Timing-Problem** - deiconify() → update → iconify() Sequenz für Linux
+
+### Verbessert
+- **Platform-agnostisch** - Funktioniert jetzt auf Windows UND Linux
+- **Debug-Logging** - "Started in minimized state" Nachricht hinzugefügt
+- **start_minimized Flag** - Als Instanz-Variable gespeichert für späteren Zugriff
+
+### Technisch
+- `self.start_minimized` in __init__ gespeichert
+- `update_idletasks()` vor und nach `deiconify()` für Linux Window Manager Sync
+- Minimierung erfolgt nach vollständigem UI-Setup
+
 ## [0.0.0.21] - 2025-10-15
 
 ### Behoben

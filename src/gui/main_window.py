@@ -48,13 +48,15 @@ class CamLoaderMainWindow:
     
     def __init__(self, start_minimized=False, version="0.0.0"):
         self.version = version
+        self.start_minimized = start_minimized  # Store for later use
+        
         self.root = tk.Tk()
         self.root.title(f"CamLoader v{version} - V4L2 Camera Controller")
         self.root.geometry("900x1000")  # Taller window for vertical layout
         
-        # Start minimized if requested (must be before UI setup)
+        # Hide window immediately if starting minimized
         if start_minimized:
-            self.root.withdraw()  # Hide window immediately
+            self.root.withdraw()
         
         # Controllers
         self.camera_controller = CameraController()
@@ -82,10 +84,15 @@ class CamLoaderMainWindow:
         # Setup window close handler
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         
-        # Show window if not started minimized
-        if start_minimized:
-            self.root.deiconify()  # Show as minimized icon
+        # Handle minimized start after complete UI setup
+        if self.start_minimized:
+            # Force update to ensure window is fully created
+            self.root.update_idletasks()
+            # Show and immediately iconify for proper minimization on Linux
+            self.root.deiconify()
+            self.root.update_idletasks()
             self.root.iconify()
+            logger.info("Started in minimized state")
     
     def setup_ui(self):
         """Setup the user interface"""
