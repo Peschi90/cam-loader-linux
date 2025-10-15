@@ -59,6 +59,9 @@ class CamLoaderMainWindow:
         # Current camera
         self.current_camera: Optional[CameraDevice] = None
         
+        # Application state
+        self.startup_complete = False  # Flag to prevent setting parameters during startup
+        
         # GUI Components
         self.setup_ui()
         
@@ -67,6 +70,10 @@ class CamLoaderMainWindow:
         
         # Apply startup configurations
         self.apply_startup_configurations()
+        
+        # Mark startup as complete
+        self.startup_complete = True
+        logger.info("Startup complete - parameter changes will now be applied")
         
         # Setup window close handler
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -369,28 +376,22 @@ class CamLoaderMainWindow:
             logger.warning(f"Failed to load saved configurations: {e}")
     
     def load_camera_config(self):
-        """Load saved configuration for current camera"""
+        """Load saved configuration for current camera (only refresh display, don't set parameters)"""
         if not self.current_camera:
+            return
+        
+        # During startup, don't do anything - startup config handles parameter setting
+        if not self.startup_complete:
+            logger.debug(f"Skipping config load for {self.current_camera.device_path} - startup not complete")
             return
         
         try:
             config = self.config_manager.get_camera_config(self.current_camera.device_path)
             if config and isinstance(config, dict):
-                # Apply configuration to camera
-                parameters = config.get('parameters', {})
-                if isinstance(parameters, dict):
-                    for param_name, param_data in parameters.items():
-                        if param_name in self.current_camera.parameters:
-                            if isinstance(param_data, dict):
-                                value = param_data.get('value')
-                                if value is not None:
-                                    self.camera_controller.set_parameter(
-                                        self.current_camera.device_path,
-                                        param_name,
-                                        value
-                                    )
+                logger.info(f"Loaded saved config for {self.current_camera.device_path}, refreshing display only")
                 
-                # Refresh parameter display
+                # Only refresh parameter display, don't set parameters
+                # Parameters are already set by startup configuration if enabled
                 self.parameter_frame.refresh_parameters()
                 self.status_var.set("Configuration loaded")
                 

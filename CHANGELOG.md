@@ -14,6 +14,46 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.20] - 2025-01-15
+
+### Behoben
+- **Doppeltes Parameter-Setzen beim Start** - Parameter werden nicht mehr mehrfach gesetzt
+- **Unnötige Parameter-Übertragungen** - Keine automatischen Sets außerhalb Startup-Config
+- **Startup-Flow optimiert** - Nur Startup-Config setzt Parameter beim Start
+
+### Verbessert
+- **Startup-Flag** - startup_complete Flag verhindert Parameter-Sets während Initialisierung
+- **load_camera_config** - Nur noch Display-Refresh, keine Parameter-Übertragung
+- **Klarer Startup-Flow** - Nur Startup-Configuration schreibt Parameter beim Start
+- **Logging-Klarheit** - "Startup complete" Nachricht markiert Ende der Initialisierung
+
+### Technisch
+- startup_complete Flag in MainWindow.__init__()
+- load_camera_config() prüft startup_complete vor Ausführung
+- Entfernte Parameter-Setting-Schleife aus load_camera_config()
+- Debug-Logging für übersprungene Config-Loads während Startup
+
+### Behavior Changes
+**VOR dieser Änderung:**
+1. Kamera-Erkennung → Parameter setzen
+2. Config laden → Parameter setzen
+3. Startup-Config → Parameter setzen
+4. Erste Kamera auswählen → Parameter setzen
+= Parameter 3-4x gesetzt!
+
+**NACH dieser Änderung:**
+1. Kamera-Erkennung → nur laden
+2. Config laden → wird übersprungen (startup_complete=False)
+3. Startup-Config → Parameter setzen (einzige Quelle beim Start)
+4. startup_complete = True
+5. Erste Kamera auswählen → nur Display-Refresh
+= Parameter 1x gesetzt!
+
+### Logging-Verbesserungen
+- "Startup complete - parameter changes will now be applied"
+- "Skipping config load for /dev/videoX - startup not complete" (DEBUG)
+- "Loaded saved config for /dev/videoX, refreshing display only"
+
 ## [0.0.0.19] - 2025-01-15
 
 ### Hinzugefügt
