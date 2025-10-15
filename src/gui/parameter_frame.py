@@ -215,6 +215,10 @@ class ParameterFrame(ttk.LabelFrame):
             # Add tooltip to control
             ToolTip(control, tooltip_text)
         elif param.min_val is not None and param.max_val is not None:
+            # Initialize text entry vars dict if not exists
+            if not hasattr(self, '_text_entry_vars'):
+                self._text_entry_vars = {}
+            
             # Scale control with text entry
             control = self.create_scale_control(frame, param, value_var)
             # Add text entry field for direct input

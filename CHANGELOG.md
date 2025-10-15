@@ -14,6 +14,39 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.18] - 2025-01-15
+
+### Behoben
+- **Slider-Text-Synchronisation** - Texteingabefeld aktualisiert sich jetzt korrekt beim Slider-Bewegen
+- **Preview-Kamera-Wechsel** - Preview wechselt automatisch zur neuen Kamera wenn aktiv
+- **Detached-Preview-Kamera-Wechsel** - Auch abgetrenntes Preview folgt Kamerawechsel
+- **Messagebox-Vordergrund** - Messageboxen und Dialoge erscheinen jetzt immer im Vordergrund
+
+### Verbessert
+- **Automatisches Preview-Restart** - Preview startet automatisch neu bei Kamerawechsel wenn es läuft
+- **Dialog-Fokus-Management** - lift() und focus_force() für alle Dialoge
+- **Text-Entry-Initialisierung** - _text_entry_vars wird vor Slider-Erstellung initialisiert
+- **Robuste Kamera-Updates** - Synchronisierte Updates für alle Preview-Fenster
+
+### Technisch
+- set_camera() speichert Preview-Status und startet neu wenn aktiv war
+- Detached preview window erhält eigene set_camera() Methode
+- Main window ruft set_camera() für beide Preview-Typen auf
+- _text_entry_vars Dictionary-Initialisierung vor create_scale_control()
+- lift() und focus_force() für root window vor messagebox.showerror()
+- Modal dialogs nutzen lift() und focus_force() nach grab_set()
+
+### UI/UX Verbesserungen
+- **Nahtloser Kamerawechsel** - Preview läuft ohne Unterbrechung weiter
+- **Bessere Dialog-Sichtbarkeit** - Keine versteckten Dialoge mehr
+- **Synchronisierte Eingaben** - Slider und Textfeld immer in Sync
+- **Konsistente Preview-Verwaltung** - Beide Preview-Modi verhalten sich gleich
+
+### Hinweis zu Startup-Parametern
+- Startup-Konfiguration sendet NUR markierte Parameter (wie erwartet)
+- Code prüft include_var.get() vor Parameter-Übertragung
+- Nur aktivierte Checkboxen werden in config["parameters"] gespeichert
+
 ## [0.0.0.17] - 2025-01-15
 
 ### Behoben

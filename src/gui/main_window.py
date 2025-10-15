@@ -32,6 +32,17 @@ from gui.startup_config import StartupConfigWindow
 
 logger = logging.getLogger(__name__)
 
+# Helper function to show messageboxes in foreground
+def show_messagebox(func, *args, **kwargs):
+    """Wrapper to ensure messageboxes appear in foreground"""
+    result = func(*args, **kwargs)
+    # Force window to front
+    root = kwargs.get('parent')
+    if root:
+        root.lift()
+        root.focus_force()
+    return result
+
 class CamLoaderMainWindow:
     """Main application window"""
     
@@ -231,6 +242,13 @@ class CamLoaderMainWindow:
                 # Update preview frame
                 self.preview_frame.set_camera(device_path)
                 
+                # Update detached preview if it exists
+                if hasattr(self.preview_frame, 'detached_window') and self.preview_frame.detached_window:
+                    try:
+                        self.preview_frame.detached_window.set_camera(device_path)
+                    except Exception as e:
+                        logger.warning(f"Failed to update detached preview: {e}")
+                
                 # Load saved configuration if available
                 self.load_camera_config()
                 
@@ -241,7 +259,9 @@ class CamLoaderMainWindow:
             import traceback
             logger.error(f"Failed to select camera: {e}\n{traceback.format_exc()}")
             self.status_var.set("Error selecting camera")
-            messagebox.showerror("Error", f"Failed to select camera: {e}")
+            self.root.lift()
+            self.root.focus_force()
+            messagebox.showerror("Error", f"Failed to select camera: {e}", parent=self.root)
     
     def on_parameter_changed(self, param_name: str, value):
         """Handle parameter value change"""

@@ -352,6 +352,8 @@ class CameraConfigDialog:
         """Set modal grab after window is visible"""
         try:
             self.window.grab_set()
+            self.window.lift()
+            self.window.focus_force()
         except tk.TclError as e:
             logger.warning(f"Could not set modal grab: {e}")
     

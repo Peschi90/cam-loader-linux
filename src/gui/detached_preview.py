@@ -127,6 +127,20 @@ class DetachedPreviewWindow:
         if was_running and self.camera_device:
             self.start_preview()
     
+    def set_camera(self, device_path: str):
+        """Set the camera device for preview"""
+        was_running = self.preview_running
+        
+        if self.preview_running:
+            self.stop_preview()
+        
+        self.camera_device = device_path
+        logger.info(f"Detached preview camera set to: {device_path}")
+        
+        # Restart preview if it was running
+        if was_running:
+            self.start_preview()
+    
     def start_preview(self):
         """Start the camera preview in detached window"""
         if not CV2_AVAILABLE:

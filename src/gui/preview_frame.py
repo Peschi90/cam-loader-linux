@@ -89,11 +89,17 @@ class PreviewFrame(ttk.LabelFrame):
     
     def set_camera(self, device_path: str):
         """Set the camera device for preview"""
+        was_running = self.preview_running
+        
         if self.preview_running:
             self.stop_preview()
         
         self.camera_device = device_path
         logger.info(f"Preview camera set to: {device_path}")
+        
+        # Restart preview if it was running
+        if was_running:
+            self.start_preview()
     
     def start_preview(self):
         """Start the camera preview"""
