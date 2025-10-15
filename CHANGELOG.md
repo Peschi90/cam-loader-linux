@@ -14,6 +14,19 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.6] - 2025-01-15
+
+### Behoben
+- **YAML-Syntax-Fehler** in GitHub Actions Workflow behoben
+- **Workflow vereinfacht** - erstellt nur noch einzelne ausführbare Datei und Quellcode-Pakete
+- **Einrückungsfehler** in mehrzeiligen YAML-Strings korrigiert
+- **Release-Pipeline** optimiert für einfachere Bereitstellung ohne komplexe Installationsskripte
+
+### Technisch
+- YAML-Syntax-Validierung mit PyYAML hinzugefügt
+- Workflow-Architektur vereinfacht (entfernte komplexe Packaging-Skripte)
+- Direkte ausführbare Dateien ohne Installation per Doppelklick nutzbar
+
 ## [0.0.0.5] - 2025-10-15
 
 ### Behoben
