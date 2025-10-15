@@ -14,6 +14,33 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.17] - 2025-01-15
+
+### Behoben
+- **Kritischer Parameter-Frame-Fehler** - StringVar in parameter_widgets verursachte Crashes beim Kamerawechsel
+- **Kamera-Wechsel funktioniert jetzt** - Vollständig funktionaler Wechsel zwischen Kameras
+- **Preview-Probleme behoben** - Preview funktioniert jetzt korrekt nach Kamerawechsel
+- **Widget-Cleanup-Fehler** - Robuste Fehlerbehandlung beim Aufräumen von Parameter-Widgets
+
+### Verbessert
+- **Robuste Widget-Verwaltung** - Type-Checking vor Zugriff auf widget_info Dictionary
+- **Sichere Widget-Zerstörung** - Try-Catch um alle destroy() Aufrufe
+- **Bessere Fehlerbehandlung** - Warnung statt Crash bei unerwartetem Widget-Typ
+- **Saubere Datenstruktur** - Keine StringVars mehr direkt in parameter_widgets
+
+### Technisch
+- Entfernte fehlerhafte StringVar-Speicherung in parameter_widgets (Zeile 320)
+- isinstance() Prüfung für alle widget_info Einträge
+- Try-Catch um frame.destroy() und widget.destroy() Aufrufe
+- Logger-Warnungen für unerwartete Widget-Typen
+- Separate Speicherung von text_vars in _text_entry_vars Dictionary
+
+### Root Cause
+- `self.parameter_widgets[param.name + "_text_var"] = text_var` speicherte StringVar direkt
+- `clear_parameters()` erwartete Dictionary mit 'frame' Key für alle Einträge
+- `widget_info['frame']` auf StringVar verursachte "'StringVar' object is not subscriptable"
+- Lösung: StringVar-Speicherung entfernt, nur Dictionaries in parameter_widgets
+
 ## [0.0.0.16] - 2025-01-15
 
 ### Behoben

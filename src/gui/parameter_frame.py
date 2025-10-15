@@ -316,8 +316,8 @@ class ParameterFrame(ttk.LabelFrame):
         entry.bind("<FocusOut>", on_text_change)
         entry.pack(side="right", padx=(5, 0))
         
-        # Store text_var reference for updates
-        self.parameter_widgets[param.name + "_text_var"] = text_var
+        # Note: text_var is stored in _text_entry_vars, not parameter_widgets
+        # to avoid conflicts with widget_info dictionary structure
         
         return entry
     
@@ -357,8 +357,20 @@ class ParameterFrame(ttk.LabelFrame):
     
     def clear_parameters(self):
         """Clear all parameter controls"""
-        for widget_info in self.parameter_widgets.values():
-            widget_info['frame'].destroy()
+        # Safely iterate and clear widget references
+        for key, widget_info in list(self.parameter_widgets.items()):
+            # Skip if not a dictionary (shouldn't happen, but be safe)
+            if not isinstance(widget_info, dict):
+                logger.warning(f"Unexpected widget_info type for {key}: {type(widget_info)}")
+                continue
+            
+            # Destroy the frame if it exists
+            if 'frame' in widget_info and widget_info['frame']:
+                try:
+                    widget_info['frame'].destroy()
+                except Exception as e:
+                    logger.warning(f"Failed to destroy frame for {key}: {e}")
+        
         self.parameter_widgets.clear()
         
         # Clear text entry variables
@@ -367,7 +379,10 @@ class ParameterFrame(ttk.LabelFrame):
         
         # Clear any existing widgets in scrollable frame
         for widget in self.scrollable_frame.winfo_children():
-            widget.destroy()
+            try:
+                widget.destroy()
+            except Exception as e:
+                logger.warning(f"Failed to destroy widget: {e}")
     
     def refresh_parameters(self):
         """Refresh parameter values from camera"""
