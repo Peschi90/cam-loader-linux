@@ -14,6 +14,43 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Multi-Language-Unterstützung
 - Dark Theme
 
+## [0.0.0.13] - 2025-01-15
+
+### Hinzugefügt
+- **Parameter-Lock-Visualisierung** - Gesperrte Parameter werden mit 🔒 und Status angezeigt
+- **Unlock-Funktionalität** - "🔓 Unlock" Button für entsperrbare Parameter
+- **Lock-Status-Erkennung** - Automatische Erkennung von read-only und inactive Parametern
+- **Visuelle Lock-Unterscheidung** - Verschiedene Icons und Farben für verschiedene Lock-Typen
+
+### Verbessert
+- **Parameter-Status-Anzeige** mit farbcodierten Indikatoren:
+  - 🔒 (rot) für READ-ONLY Parameter
+  - ⚠️ (orange) für INACTIVE Parameter
+  - Unlock-Button nur für entsperrbare Parameter
+- **Intelligente Unlock-Strategien** - Automatisches Deaktivieren von Auto-Modi
+- **Detaillierte Tooltips** für Lock-Status mit Flag-Informationen
+- **Parameter-Frame-Layout** für bessere Übersichtlichkeit bei gesperrten Parametern
+
+### Technisch
+- Erweiterte V4L2Parameter-Klasse mit is_readonly, is_inactive, flags Properties
+- Flag-Parsing in _parse_control_line für v4l2-ctl Output
+- try_unlock_parameter() Methode mit Auto-Parameter-Deaktivierung
+- get_locking_parameters() für Parameter-Abhängigkeits-Mapping
+- Visual Lock-Status-Framework mit Icons und Farbcodierung
+
+### Neue Unlock-Strategien
+- **exposure_absolute** ← exposure_auto deaktivieren
+- **focus_absolute** ← focus_auto deaktivieren  
+- **white_balance_temperature** ← white_balance_temperature_auto deaktivieren
+- **gain** ← gain_automatic deaktivieren
+- **brightness/contrast/saturation** ← auto_exposure deaktivieren
+
+### UI/UX Verbesserungen
+- Deaktivierte Kontrollen für gesperrte Parameter
+- Unlock-Hilfe mit aktuellen Werten der sperrenden Parameter
+- Erfolgs-/Fehlermeldungen für Unlock-Versuche
+- Automatische Parameter-Refresh nach erfolgreichem Unlock
+
 ## [0.0.0.12] - 2025-01-15
 
 ### Hinzugefügt

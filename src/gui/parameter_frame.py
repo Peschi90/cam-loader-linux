@@ -66,9 +66,14 @@ class ParameterFrame(ttk.LabelFrame):
         
         self.parameter_changed_callback = parameter_changed_callback
         self.camera: Optional[CameraDevice] = None
+        self.camera_controller = None  # Will be set later
         self.parameter_widgets = {}
         
         self.setup_ui()
+    
+    def set_camera_controller(self, camera_controller):
+        """Set the camera controller for unlock functionality"""
+        self.camera_controller = camera_controller
     
     def setup_ui(self):
         """Setup the parameter control interface"""
@@ -137,12 +142,65 @@ class ParameterFrame(ttk.LabelFrame):
         frame = ttk.Frame(self.scrollable_frame)
         frame.pack(fill="x", pady=2)
         
+        # Lock status indicator
+        if param.is_locked:
+            # Create a frame for lock indicators
+            lock_frame = ttk.Frame(frame)
+            lock_frame.pack(side="left", padx=(0, 5))
+            
+            # Lock icon with color coding
+            if param.is_readonly:
+                lock_text = "🔒"
+                lock_color = "red"
+                status_text = "READ-ONLY"
+            elif param.is_inactive:
+                lock_text = "⚠️"
+                lock_color = "orange"
+                status_text = "INACTIVE"
+            else:
+                lock_text = "🔒"
+                lock_color = "red"
+                status_text = "LOCKED"
+            
+            lock_label = ttk.Label(lock_frame, text=lock_text, foreground=lock_color, width=2)
+            lock_label.pack(side="top")
+            
+            # Status text
+            status_label = ttk.Label(lock_frame, text=status_text, font=("Arial", 6), foreground=lock_color)
+            status_label.pack(side="top")
+            
+            # Add unlock button for potentially unlockable parameters
+            if not param.is_readonly:  # Only show unlock button for non-readonly parameters
+                unlock_btn = ttk.Button(
+                    frame, 
+                    text="🔓 Unlock", 
+                    width=8,
+                    command=lambda: self.try_unlock_parameter(param.name)
+                )
+                unlock_btn.pack(side="left", padx=(0, 5))
+                
+                ToolTip(unlock_btn, f"Try to unlock {param.name} by disabling auto modes")
+            
+            # Add tooltip to lock indicator
+            lock_tooltip = f"Parameter is {status_text.lower()}"
+            if param.flags:
+                lock_tooltip += f"\nFlags: {', '.join(param.flags)}"
+            
+            ToolTip(lock_label, lock_tooltip)
+            
+        else:
+            # Empty space to align with locked parameters (smaller now)
+            spacer = ttk.Label(frame, text="", width=8)
+            spacer.pack(side="left", padx=(0, 5))
+        
         # Parameter name label with tooltip
         name_label = ttk.Label(frame, text=param.name, width=15)
         name_label.pack(side="left", padx=(0, 10))
         
         # Add tooltip to the parameter name
         tooltip_text = get_parameter_tooltip(param.name)
+        if param.is_locked:
+            tooltip_text += f"\n\n⚠️ This parameter is currently locked and cannot be changed."
         ToolTip(name_label, tooltip_text)
         
         # Current value display (always shows actual value)
@@ -172,6 +230,12 @@ class ParameterFrame(ttk.LabelFrame):
             value_label.pack(side="right", padx=(10, 0))
             # Add tooltip to control
             ToolTip(control, tooltip_text)
+        
+        # Disable controls if parameter is locked
+        if param.is_locked:
+            self._disable_control(control)
+            if 'text_entry' in locals():
+                self._disable_control(text_entry)
         
         # Store references
         self.parameter_widgets[param.name] = {
@@ -299,3 +363,75 @@ class ParameterFrame(ttk.LabelFrame):
             elif isinstance(control, ttk.Checkbutton):
                 # Get the associated BooleanVar and update it
                 control.invoke() if bool(param.value) != control.instate(['selected']) else None
+    
+    def try_unlock_parameter(self, param_name: str):
+        """Try to unlock a parameter"""
+        if not self.camera or not self.camera_controller:
+            return
+        
+        # Import here to avoid circular imports
+        from tkinter import messagebox
+        
+        # First try automatic unlock
+        if self.camera_controller.try_unlock_parameter(self.camera.device_path, param_name):
+            messagebox.showinfo(
+                "Success",
+                f"Parameter '{param_name}' has been unlocked!\n\nRefreshing parameter display..."
+            )
+            # Refresh the parameter display
+            self.camera_controller.refresh_camera(self.camera.device_path)
+            self.create_parameter_controls()
+            return
+        
+        # If automatic unlock failed, show manual instructions
+        locking_params = self._get_locking_parameters(param_name)
+        
+        if locking_params:
+            message = f"Automatic unlock failed. To unlock '{param_name}', try manually disabling these auto modes:\n\n"
+            message += "\n".join([f"• {param}" for param in locking_params])
+            message += f"\n\nSet these parameters to 0 (Manual mode) to unlock '{param_name}'."
+            
+            # Add current values of locking parameters
+            message += "\n\nCurrent values:"
+            for locking_param in locking_params:
+                if locking_param in self.camera.parameters:
+                    current_val = self.camera.parameters[locking_param].value
+                    message += f"\n• {locking_param}: {current_val}"
+            
+            messagebox.showinfo(
+                "Manual Unlock Required", 
+                message,
+                icon="info"
+            )
+        else:
+            messagebox.showwarning(
+                "Cannot Unlock",
+                f"Parameter '{param_name}' appears to be permanently locked.\n"
+                f"This might be due to hardware limitations or driver restrictions.\n\n"
+                f"Flags: {', '.join(self.camera.parameters[param_name].flags) if self.camera.parameters[param_name].flags else 'None'}"
+            )
+    
+    def _get_locking_parameters(self, param_name: str) -> list:
+        """Get list of parameters that might be locking the given parameter"""
+        unlock_strategies = {
+            'exposure_absolute': ['exposure_auto'],
+            'focus_absolute': ['focus_auto'],
+            'white_balance_temperature': ['white_balance_temperature_auto'],
+            'gain': ['gain_automatic'],
+            'brightness': ['auto_exposure'],
+            'contrast': ['auto_exposure'],
+            'saturation': ['auto_exposure'],
+        }
+        
+        return unlock_strategies.get(param_name, [])
+    
+    def _disable_control(self, control):
+        """Disable a control widget"""
+        try:
+            if isinstance(control, (ttk.Scale, ttk.Entry, ttk.Checkbutton)):
+                control.configure(state='disabled')
+            elif hasattr(control, 'configure'):
+                control.configure(state='disabled')
+        except Exception as e:
+            # Ignore errors when disabling controls
+            pass

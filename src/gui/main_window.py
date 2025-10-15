@@ -80,6 +80,9 @@ class CamLoaderMainWindow:
         # Control panels
         self.create_control_panels(main_frame)
         
+        # Give parameter frame access to camera controller for unlock functionality
+        self.parameter_frame.set_camera_controller(self.camera_controller)
+        
         # Status bar
         self.create_status_bar()
         

@@ -29,6 +29,9 @@ class V4L2Parameter:
         self.step = step
         self.param_type = param_type
         self.original_value = value  # For backup purposes
+        self.is_readonly = False  # Whether parameter can be changed
+        self.is_inactive = False  # Whether parameter is currently inactive
+        self.flags = []  # V4L2 control flags
     
     def to_dict(self) -> Dict:
         """Convert parameter to dictionary for serialization"""
@@ -39,7 +42,10 @@ class V4L2Parameter:
             'max_val': self.max_val,
             'step': self.step,
             'param_type': self.param_type,
-            'original_value': self.original_value
+            'original_value': self.original_value,
+            'is_readonly': self.is_readonly,
+            'is_inactive': self.is_inactive,
+            'flags': self.flags
         }
     
     @classmethod
@@ -54,7 +60,15 @@ class V4L2Parameter:
             param_type=data.get('param_type', 'int')
         )
         param.original_value = data.get('original_value', data['value'])
+        param.is_readonly = data.get('is_readonly', False)
+        param.is_inactive = data.get('is_inactive', False)
+        param.flags = data.get('flags', [])
         return param
+    
+    @property
+    def is_locked(self) -> bool:
+        """Check if parameter is locked (readonly or inactive)"""
+        return self.is_readonly or self.is_inactive
 
 class CameraDevice:
     """Represents a V4L2 camera device"""
@@ -142,10 +156,33 @@ class CameraController:
             logger.warning("Camera detection is only supported on Linux systems")
             # Create a dummy camera for Windows testing
             dummy_camera = CameraDevice("dummy0", "Dummy Camera (Windows Test)")
+            
+            # Create some dummy parameters with different lock states
+            brightness_param = V4L2Parameter("brightness", 128, 0, 255, 1)
+            brightness_param.flags = ["slider"]
+            
+            exposure_auto_param = V4L2Parameter("exposure_auto", 1, 0, 3, 1)
+            exposure_auto_param.flags = ["menu"]
+            
+            exposure_absolute_param = V4L2Parameter("exposure_absolute", 166, 1, 10000, 1)
+            exposure_absolute_param.is_inactive = True
+            exposure_absolute_param.flags = ["inactive"]
+            
+            focus_auto_param = V4L2Parameter("focus_auto", 1, 0, 1, 1)
+            focus_auto_param.flags = ["button"]
+            
+            focus_absolute_param = V4L2Parameter("focus_absolute", 0, 0, 255, 5)
+            focus_absolute_param.is_readonly = True
+            focus_absolute_param.flags = ["read-only"]
+            
             dummy_camera.parameters = {
-                "brightness": V4L2Parameter("brightness", 128, 0, 255, 1),
+                "brightness": brightness_param,
                 "contrast": V4L2Parameter("contrast", 64, 0, 127, 1),
                 "saturation": V4L2Parameter("saturation", 64, 0, 127, 1),
+                "exposure_auto": exposure_auto_param,
+                "exposure_absolute": exposure_absolute_param,
+                "focus_auto": focus_auto_param,
+                "focus_absolute": focus_absolute_param,
             }
             dummy_camera.is_available = True
             self.cameras["dummy0"] = dummy_camera
@@ -214,7 +251,7 @@ class CameraController:
     
     def _parse_control_line(self, line: str) -> Optional[V4L2Parameter]:
         """Parse a v4l2-ctl control line"""
-        # Example: brightness 0x00980900 (int)    : min=0 max=255 step=1 default=128 value=128
+        # Example: brightness 0x00980900 (int)    : min=0 max=255 step=1 default=128 value=128 flags=slider
         
         # Extract parameter name
         name_match = re.search(r"^\s*(\w+)", line)
@@ -232,6 +269,7 @@ class CameraController:
         min_match = re.search(r"min=([+-]?\d+)", line)
         max_match = re.search(r"max=([+-]?\d+)", line)
         step_match = re.search(r"step=([+-]?\d+)", line)
+        flags_match = re.search(r"flags=([^\s]+)", line)
         
         if not value_match:
             return None
@@ -242,7 +280,7 @@ class CameraController:
             max_val = int(max_match.group(1)) if max_match else None
             step = int(step_match.group(1)) if step_match else None
             
-            return V4L2Parameter(
+            param = V4L2Parameter(
                 name=param_name,
                 value=value,
                 min_val=min_val,
@@ -250,6 +288,18 @@ class CameraController:
                 step=step,
                 param_type=param_type
             )
+            
+            # Parse flags
+            if flags_match:
+                flags_str = flags_match.group(1)
+                param.flags = flags_str.split(',') if ',' in flags_str else [flags_str]
+                
+                # Check for readonly/inactive flags
+                param.is_readonly = 'read-only' in param.flags or 'ro' in param.flags
+                param.is_inactive = 'inactive' in param.flags or 'grabbed' in param.flags
+            
+            return param
+            
         except ValueError as e:
             logger.warning(f"Failed to parse numeric values from line: {line}, Error: {e}")
             return None
@@ -346,3 +396,67 @@ class CameraController:
         camera = self.cameras.get(device_path)
         if camera:
             self._load_camera_parameters(camera)
+    
+    def try_unlock_parameter(self, device_path: str, param_name: str) -> bool:
+        """Try to unlock a parameter by disabling related auto modes"""
+        camera = self.cameras.get(device_path)
+        if not camera or param_name not in camera.parameters:
+            return False
+        
+        param = camera.parameters[param_name]
+        if not param.is_locked:
+            return True  # Already unlocked
+        
+        # Define parameter unlock strategies
+        unlock_strategies = {
+            'exposure_absolute': ['exposure_auto'],
+            'focus_absolute': ['focus_auto'],
+            'white_balance_temperature': ['white_balance_temperature_auto'],
+            'gain': ['gain_automatic'],
+            'brightness': ['auto_exposure'],
+            'contrast': ['auto_exposure'],
+            'saturation': ['auto_exposure'],
+        }
+        
+        # Try to disable auto modes that might lock this parameter
+        auto_params = unlock_strategies.get(param_name, [])
+        success = False
+        
+        for auto_param in auto_params:
+            if auto_param in camera.parameters:
+                # Try to set auto parameter to manual mode (usually 0)
+                if self.set_parameter(device_path, auto_param, 0):
+                    logger.info(f"Disabled {auto_param} to unlock {param_name}")
+                    success = True
+        
+        # Also try some common auto parameters that might affect this one
+        common_auto_params = ['exposure_auto', 'white_balance_temperature_auto', 'focus_auto', 'gain_automatic']
+        for auto_param in common_auto_params:
+            if auto_param in camera.parameters and auto_param not in auto_params:
+                current_value = camera.parameters[auto_param].value
+                if current_value != 0:  # If it's in auto mode
+                    if self.set_parameter(device_path, auto_param, 0):
+                        logger.info(f"Disabled {auto_param} (common auto) to unlock {param_name}")
+                        success = True
+        
+        # Refresh parameters to check if unlock was successful
+        if success:
+            self._load_camera_parameters(camera)
+            param = camera.parameters.get(param_name)
+            return param and not param.is_locked
+        
+        return False
+    
+    def get_locking_parameters(self, device_path: str, param_name: str) -> List[str]:
+        """Get list of parameters that might be locking the given parameter"""
+        unlock_strategies = {
+            'exposure_absolute': ['exposure_auto'],
+            'focus_absolute': ['focus_auto'],
+            'white_balance_temperature': ['white_balance_temperature_auto'],
+            'gain': ['gain_automatic'],
+            'brightness': ['auto_exposure'],
+            'contrast': ['auto_exposure'],
+            'saturation': ['auto_exposure'],
+        }
+        
+        return unlock_strategies.get(param_name, [])
