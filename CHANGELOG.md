@@ -1,4 +1,4 @@
-# Changelog# Changelog# Changelog
+# Changelog# Changelog# Changelog# Changelog
 
 
 
@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),All notable changes to this project will be documented in this file.Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),All notable changes to this project will be documented in this file.
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
@@ -14,11 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),All notable changes to this project will be documented in this file.Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 ### Planned
 
-- Plugin system for extended parametersand this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- Plugin system for extended parametersand this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Scripting support for automation
 
@@ -26,7 +26,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Multi-language support
 
-- Dark theme## [Unreleased]## [Unreleased]
+- Dark theme## [Unreleased]
+
+
+
+## [0.0.0.25] - 2025-10-16The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
+
+
+
+### Fixed### Planned
+
+- **Mixed Language Content** - Removed all German text from documentation
+
+- **Clean English Documentation** - All files now contain only English content- Plugin system for extended parametersand this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+- **README.md** - Pure English version without German duplicates
+
+- **CHANGELOG.md** - Clean English-only changelog- Scripting support for automation
+
+- **TROUBLESHOOTING.md** - English-only troubleshooting guide
+
+- Extended preview options (histogram, etc.)
+
+### Changed
+
+- **Documentation Language** - Exclusively English for international audience- Multi-language support
+
+- **No Mixed Content** - Removed side-by-side German/English text
+
+- **Professional Standards** - Clean, single-language documentation- Dark theme## [Unreleased]## [Unreleased]
 
 
 
@@ -34,71 +62,59 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 
-### Changed### Planned### Geplant
+### Changed## [0.0.0.24] - 2025-10-16
 
 - **Complete English Translation** - All documentation now in English
 
-- **README.md** - Fully translated to English- Plugin system for extended parameters- Plugin-System für erweiterte Parameter
+- **README.md** - Fully translated to English
 
-- **CHANGELOG.md** - Completely translated to English  
+- **CHANGELOG.md** - Completely translated to English
 
-- **TROUBLESHOOTING.md** - Translated to English- Scripting support for automation- Scripting-Unterstützung für Automatisierung
+- **TROUBLESHOOTING.md** - Translated to English### Changed### Planned### Geplant
 
 - **International Audience** - Better accessibility for non-German speakers
 
-- Extended preview options (histogram, etc.)- Erweiterte Vorschau-Optionen (Histogramm, etc.)
+- **Complete English Translation** - All documentation now in English
 
 ### Improved
 
-- **Documentation Quality** - Professional English documentation- Multi-language support- Multi-Language-Unterstützung
+- **Documentation Quality** - Professional English documentation- **README.md** - Fully translated to English- Plugin system for extended parameters- Plugin-System für erweiterte Parameter
 
 - **Global Reach** - Project now accessible to international developers
 
-- **Contribution Guidelines** - English coding standards for international contributors- Dark theme- Dark Theme
+- **Contribution Guidelines** - English coding standards for international contributors- **CHANGELOG.md** - Completely translated to English  
 
 - **Issue Reporting** - English documentation for better GitHub issue quality
 
-
-
-### Technical
-
-- Maintained all technical content accuracy during translation## [0.0.0.23] - 2025-10-15## [0.0.0.23] - 2025-10-15
-
-- Preserved all code examples and commands
-
-- Kept all links and references intact
-
-- Updated contact and contribution sections
-
-### Added### Hinzugefügt
+- **TROUBLESHOOTING.md** - Translated to English- Scripting support for automation- Scripting-Unterstützung für Automatisierung
 
 ## [0.0.0.23] - 2025-10-15
 
-- **📖 GitHub Repository Link** - Direct link in Help menu- **📖 GitHub Repository Link** - Direkter Link im Help-Menu
+- **International Audience** - Better accessibility for non-German speakers
 
 ### Added
 
-- **📖 GitHub Repository Link** - Direct link in Help menu- **🐛 Report Issue** - Create GitHub issue directly from application- **🐛 Report Issue** - GitHub Issue direkt aus Anwendung erstellen
+- **📖 GitHub Repository Link** - Direct link in Help menu- Extended preview options (histogram, etc.)- Erweiterte Vorschau-Optionen (Histogramm, etc.)
 
 - **🐛 Report Issue** - Create GitHub issue directly from application
 
-- **📁 Open Config Folder** - Open configuration directory (File menu)- **📁 Open Config Folder** - Open configuration directory (File menu)- **📁 Open Config Folder** - Konfigurationsverzeichnis öffnen (File-Menu)
+- **📁 Open Config Folder** - Open configuration directory (File menu)### Improved
 
 - **Enhanced About Dialog** - Larger (600x650) with scrollbar
 
-- **Config Path Display** - Backup/config storage location visible in About dialog- **Enhanced About Dialog** - Larger (600x650) with scrollbar- **Erweiterter About-Dialog** - Größer (600x650) mit Scrollbar
+- **Config Path Display** - Backup/config storage location visible in About dialog- **Documentation Quality** - Professional English documentation- Multi-language support- Multi-Language-Unterstützung
 
 - **Clickable Links** - GitHub link clickable in About dialog
 
-- **Modal About Dialog** - grab_set() for better UX- **Config Path Display** - Backup/config storage location visible in About dialog- **Config-Pfad-Anzeige** - Backup/Config-Speicherort im About-Dialog sichtbar
+- **Modal About Dialog** - grab_set() for better UX- **Global Reach** - Project now accessible to international developers
 
 
 
-### Improved- **Clickable Links** - GitHub link clickable in About dialog- **Klickbare Links** - GitHub-Link im About-Dialog klickbar
+### Improved- **Contribution Guidelines** - English coding standards for international contributors- Dark theme- Dark Theme
 
 - **About Dialog** - Enlarged from 500x400 to 600x650
 
-- **Developer Info** - Better readability with more spacing- **Modal About Dialog** - grab_set() for better UX- **Modal About-Dialog** - grab_set() für bessere UX
+- **Developer Info** - Better readability with more spacing- **Issue Reporting** - English documentation for better GitHub issue quality
 
 - **Feature List** - Complete with all 10 features
 
@@ -106,229 +122,545 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **README.md** - Completely revised with all new features
 
-### Improved### Verbessert
+### Technical
 
 ### Technical
 
-- `open_github_repo()` - Opens repository in browser- **About Dialog** - Enlarged from 500x400 to 600x650- **About-Dialog** - Von 500x400 auf 600x650 vergrößert
+- `open_github_repo()` - Opens repository in browser- Maintained all technical content accuracy during translation## [0.0.0.23] - 2025-10-15## [0.0.0.23] - 2025-10-15
 
 - `open_github_issue()` - Opens GitHub issue page
 
-- `open_config_folder()` - Platform-agnostic (Linux/Windows/macOS)- **Developer Info** - Better readability with more spacing- **Developer-Infos** - Besser lesbar mit mehr Abständen
+- `open_config_folder()` - Platform-agnostic (Linux/Windows/macOS)- Preserved all code examples and commands
 
 - Scrollable About dialog with Canvas
 
-- Centered dialog positioning- **Feature List** - Complete with all 10 features- **Feature-Liste** - Vollständig mit allen 10 Features
+- Centered dialog positioning- Kept all links and references intact
 
 
 
-### UX Improvements- **Menu Structure** - GitHub & issue links in Help menu- **Menu-Struktur** - GitHub & Issue-Links im Help-Menu
+### UX Improvements- Updated contact and contribution sections
 
 - **Access to Configs**: Now 2 ways (File menu + About dialog)
 
-- **Bug Reporting**: 1-click GitHub issue creation- **README.md** - Completely revised with all new features- **README.md** - Komplett überarbeitet mit allen neuen Features
+- **Bug Reporting**: 1-click GitHub issue creation### Added### Hinzugefügt
 
 - **Transparency**: Config storage location always visible
 
-- **Help**: Direct access to repository and documentation  - CLI arguments documented  - CLI-Argumente dokumentiert
+- **Help**: Direct access to repository and documentation## [0.0.0.23] - 2025-10-15
 
 
 
-## [0.0.0.22] - 2025-10-15  - Menu functions explained  - Menu-Funktionen erklärt
+## [0.0.0.22] - 2025-10-15- **📖 GitHub Repository Link** - Direct link in Help menu- **📖 GitHub Repository Link** - Direkter Link im Help-Menu
 
 
 
-### Fixed  - Config storage location described  - Config-Speicherort beschrieben
+### Fixed### Added
 
 - **--minimized on Linux** - Now works correctly with X11/Wayland window managers
 
-- **update_idletasks()** - Forces tkinter to communicate with window manager  - Debug information added  - Debug-Informationen hinzugefügt
+- **update_idletasks()** - Forces tkinter to communicate with window manager- **📖 GitHub Repository Link** - Direct link in Help menu- **🐛 Report Issue** - Create GitHub issue directly from application- **🐛 Report Issue** - GitHub Issue direkt aus Anwendung erstellen
 
 - **Timing Issue** - deiconify() → update → iconify() sequence for Linux
 
-  - Support links updated  - Support-Links aktualisiert
+- **🐛 Report Issue** - Create GitHub issue directly from application
 
 ### Improved
 
-- **Platform-agnostic** - Now works on both Windows AND Linux  - Roadmap with completed features  - Roadmap mit erledigten Features
+- **Platform-agnostic** - Now works on both Windows AND Linux- **📁 Open Config Folder** - Open configuration directory (File menu)- **📁 Open Config Folder** - Open configuration directory (File menu)- **📁 Open Config Folder** - Konfigurationsverzeichnis öffnen (File-Menu)
 
 - **Debug Logging** - "Started in minimized state" message added
 
-- **start_minimized Flag** - Stored as instance variable for later access
+- **start_minimized Flag** - Stored as instance variable for later access- **Enhanced About Dialog** - Larger (600x650) with scrollbar
 
 
 
-### Technical### Technical### Technisch
+### Technical- **Config Path Display** - Backup/config storage location visible in About dialog- **Enhanced About Dialog** - Larger (600x650) with scrollbar- **Erweiterter About-Dialog** - Größer (600x650) mit Scrollbar
 
 - `self.start_minimized` stored in __init__
 
-- `update_idletasks()` before and after `deiconify()` for Linux window manager sync- `open_github_repo()` - Opens repository in browser- `open_github_repo()` - Öffnet Repository in Browser
+- `update_idletasks()` before and after `deiconify()` for Linux window manager sync- **Clickable Links** - GitHub link clickable in About dialog
 
 - Minimization occurs after complete UI setup
 
-- `open_github_issue()` - Opens GitHub issue page- `open_github_issue()` - Öffnet GitHub Issue-Seite
+- **Modal About Dialog** - grab_set() for better UX- **Config Path Display** - Backup/config storage location visible in About dialog- **Config-Pfad-Anzeige** - Backup/Config-Speicherort im About-Dialog sichtbar
 
 ## [0.0.0.21] - 2025-10-15
+
+
+
+### Fixed
+
+- **--minimized CLI Argument** - Application now starts correctly minimized### Improved- **Clickable Links** - GitHub link clickable in About dialog- **Klickbare Links** - GitHub-Link im About-Dialog klickbar
+
+- **Window Visibility** - window.withdraw() directly after window creation
+
+- **Startup Flow** - Minimized logic moved before UI setup- **About Dialog** - Enlarged from 500x400 to 600x650
+
+
+
+### Technical- **Developer Info** - Better readability with more spacing- **Modal About Dialog** - grab_set() for better UX- **Modal About-Dialog** - grab_set() für bessere UX
+
+- `withdraw()` directly after `tk.Tk()` creation with --minimized flag
+
+- `deiconify()` + `iconify()` at end for correct minimization- **Feature List** - Complete with all 10 features
+
+- Prevents brief window flash when starting minimized
+
+- **Menu Structure** - GitHub & issue links in Help menu
+
+## [0.0.0.20] - 2025-01-15
+
+- **README.md** - Completely revised with all new features
+
+### Fixed
+
+- **Duplicate Parameter Setting at Startup** - Parameters no longer set multiple times### Improved### Verbessert
+
+- **Unnecessary Parameter Transfers** - No automatic sets outside startup config
+
+- **Startup Flow Optimized** - Only startup config sets parameters at start### Technical
+
+
+
+### Improved- `open_github_repo()` - Opens repository in browser- **About Dialog** - Enlarged from 500x400 to 600x650- **About-Dialog** - Von 500x400 auf 600x650 vergrößert
+
+- **Startup Flag** - startup_complete flag prevents parameter sets during initialization
+
+- **load_camera_config** - Now only display refresh, no parameter transfer- `open_github_issue()` - Opens GitHub issue page
+
+- **Clear Startup Flow** - Only startup configuration writes parameters at start
+
+- **Logging Clarity** - "Startup complete" message marks end of initialization- `open_config_folder()` - Platform-agnostic (Linux/Windows/macOS)- **Developer Info** - Better readability with more spacing- **Developer-Infos** - Besser lesbar mit mehr Abständen
+
+
+
+### Technical- Scrollable About dialog with Canvas
+
+- startup_complete flag in MainWindow.__init__()
+
+- load_camera_config() checks startup_complete before execution- Centered dialog positioning- **Feature List** - Complete with all 10 features- **Feature-Liste** - Vollständig mit allen 10 Features
+
+- Removed parameter-setting loop from load_camera_config()
+
+- Debug logging for skipped config loads during startup
+
+
+
+### Behavior Changes### UX Improvements- **Menu Structure** - GitHub & issue links in Help menu- **Menu-Struktur** - GitHub & Issue-Links im Help-Menu
+
+**BEFORE this change:**
+
+1. Camera detection → set parameters- **Access to Configs**: Now 2 ways (File menu + About dialog)
+
+2. Load config → set parameters
+
+3. Startup config → set parameters- **Bug Reporting**: 1-click GitHub issue creation- **README.md** - Completely revised with all new features- **README.md** - Komplett überarbeitet mit allen neuen Features
+
+4. Select first camera → set parameters
+
+= Parameters set 3-4 times!- **Transparency**: Config storage location always visible
+
+
+
+**AFTER this change:**- **Help**: Direct access to repository and documentation  - CLI arguments documented  - CLI-Argumente dokumentiert
+
+1. Camera detection → only load
+
+2. Load config → skipped (startup_complete=False)
+
+3. Startup config → set parameters (only source at start)
+
+4. startup_complete = True## [0.0.0.22] - 2025-10-15  - Menu functions explained  - Menu-Funktionen erklärt
+
+5. Select first camera → only display refresh
+
+= Parameters set 1 time!
+
+
+
+### Logging Improvements### Fixed  - Config storage location described  - Config-Speicherort beschrieben
+
+- "Startup complete - parameter changes will now be applied"
+
+- "Skipping config load for /dev/videoX - startup not complete" (DEBUG)- **--minimized on Linux** - Now works correctly with X11/Wayland window managers
+
+- "Loaded saved config for /dev/videoX, refreshing display only"
+
+- **update_idletasks()** - Forces tkinter to communicate with window manager  - Debug information added  - Debug-Informationen hinzugefügt
+
+## [0.0.0.19] - 2025-01-15
+
+- **Timing Issue** - deiconify() → update → iconify() sequence for Linux
+
+### Added
+
+- **CLI Arguments** - Command line support for various startup options  - Support links updated  - Support-Links aktualisiert
+
+- **Minimized Start** - `--minimized` or `-m` starts application minimized
+
+- **Debug Mode** - `--debug` enables debug logging### Improved
+
+- **Version Display** - `--version` shows version, also visible in window title
+
+- **Enhanced About Dialog** - Shows author (I3uLL3t), features and version- **Platform-agnostic** - Now works on both Windows AND Linux  - Roadmap with completed features  - Roadmap mit erledigten Features
+
+- **Donation Button** - PayPal.me/i3ull3t link in About dialog and Help menu
+
+- **Detailed Startup Logging** - Device path in all startup config logs- **Debug Logging** - "Started in minimized state" message added
+
+
+
+### CLI Usage- **start_minimized Flag** - Stored as instance variable for later access
+
+```bash
+
+# Start normally
+
+python src/main.py
+
+### Technical### Technical### Technisch
+
+# Start minimized
+
+python src/main.py --minimized- `self.start_minimized` stored in __init__
+
+
+
+# With debug logging- `update_idletasks()` before and after `deiconify()` for Linux window manager sync- `open_github_repo()` - Opens repository in browser- `open_github_repo()` - Öffnet Repository in Browser
+
+python src/main.py --debug
+
+- Minimization occurs after complete UI setup
+
+# Show version
+
+python src/main.py --version- `open_github_issue()` - Opens GitHub issue page- `open_github_issue()` - Öffnet GitHub Issue-Seite
+
+```
+
+## [0.0.0.21] - 2025-10-15
+
+## [0.0.0.18] - 2025-01-15
 
 - `open_config_folder()` - Platform-agnostic (Linux/Windows/macOS)- `open_config_folder()` - Platform-agnostisch (Linux/Windows/macOS)
 
 ### Fixed
 
-- **--minimized CLI Argument** - Application now starts correctly minimized- Scrollable About dialog with Canvas- Scrollbarer About-Dialog mit Canvas
+- **Slider-Text Synchronization** - Text input field now updates correctly when moving slider### Fixed
+
+- **Preview Camera Switch** - Preview automatically switches to new camera when active
+
+- **Detached Preview Camera Switch** - Detached preview also follows camera switch- **--minimized CLI Argument** - Application now starts correctly minimized- Scrollable About dialog with Canvas- Scrollbarer About-Dialog mit Canvas
+
+- **Messagebox Foreground** - Messageboxes and dialogs now always appear in foreground
 
 - **Window Visibility** - window.withdraw() directly after window creation
 
-- **Startup Flow** - Minimized logic moved before UI setup- Centered dialog positioning- Zentrierte Dialog-Positionierung
+### Improved
 
+- **Automatic Preview Restart** - Preview automatically restarts on camera switch if running- **Startup Flow** - Minimized logic moved before UI setup- Centered dialog positioning- Zentrierte Dialog-Positionierung
 
+- **Dialog Focus Management** - lift() and focus_force() for all dialogs
+
+- **Text Entry Initialization** - _text_entry_vars initialized before slider creation
+
+- **Robust Camera Updates** - Synchronized updates for all preview windows
 
 ### Technical
 
+## [0.0.0.17] - 2025-01-15
+
 - `withdraw()` directly after `tk.Tk()` creation with --minimized flag
-
-- `deiconify()` + `iconify()` at end for correct minimization### UX Improvements### UX-Verbesserungen
-
-- Prevents brief window flash when starting minimized
-
-- **Access to Configs**: Now 2 ways (File menu + About dialog)- **Zugriff auf Configs**: Jetzt 2 Wege (File-Menu + About-Dialog)
-
-## [0.0.0.20] - 2025-01-15
-
-- **Bug Reporting**: 1-click GitHub issue creation- **Bug-Reporting**: 1-Klick GitHub Issue erstellen
 
 ### Fixed
 
+- **Critical Parameter Frame Error** - StringVar in parameter_widgets caused crashes on camera switch- `deiconify()` + `iconify()` at end for correct minimization### UX Improvements### UX-Verbesserungen
+
+- **Camera Switch Now Works** - Fully functional switching between cameras
+
+- **Preview Problems Fixed** - Preview now works correctly after camera switch- Prevents brief window flash when starting minimized
+
+- **Widget Cleanup Error** - Robust error handling when cleaning up parameter widgets
+
+- **Access to Configs**: Now 2 ways (File menu + About dialog)- **Zugriff auf Configs**: Jetzt 2 Wege (File-Menu + About-Dialog)
+
+### Improved
+
+- **Robust Widget Management** - Type checking before accessing widget_info dictionary## [0.0.0.20] - 2025-01-15
+
+- **Safe Widget Destruction** - Try-catch around all destroy() calls
+
+- **Better Error Handling** - Warning instead of crash on unexpected widget type- **Bug Reporting**: 1-click GitHub issue creation- **Bug-Reporting**: 1-Klick GitHub Issue erstellen
+
+- **Clean Data Structure** - No more StringVars directly in parameter_widgets
+
+### Fixed
+
+## [0.0.0.14] - 2025-01-15
+
 - **Duplicate Parameter Setting at Startup** - Parameters no longer set multiple times- **Transparency**: Config storage location always visible- **Transparenz**: Config-Speicherort immer sichtbar
 
-- **Unnecessary Parameter Transfers** - No automatic sets outside startup config
+### Added
 
-- **Startup Flow Optimized** - Only startup config sets parameters at start- **Help**: Direct access to repository and documentation- **Hilfe**: Direkter Zugang zu Repository und Dokumentation
+- **Detachable Preview Window** - Preview can be moved to separate, movable window- **Unnecessary Parameter Transfers** - No automatic sets outside startup config
+
+- **New Layout Arrangement** - Parameters above preview for more space
+
+- **"Detach Preview" Button** - Preview window can be detached from main application- **Startup Flow Optimized** - Only startup config sets parameters at start- **Help**: Direct access to repository and documentation- **Hilfe**: Direkter Zugang zu Repository und Dokumentation
+
+- **Movable Preview Window** - Fully freely positionable and resizable
+
+- **"Attach to Main" Function** - Preview window can be embedded back into main application
+
+
+
+### Technical### Improved
+
+- DetachedPreviewWindow class for standalone preview window
+
+- Extended PreviewFrame with detach/attach functionality- **Startup Flag** - startup_complete flag prevents parameter sets during initialization
+
+- Revised MainWindow layout structure (vertical instead of horizontal)
+
+- Intelligent preview state transfer between windows- **load_camera_config** - Now only display refresh, no parameter transfer## [0.0.0.22] - 2025-10-15## [0.0.0.22] - 2025-10-15
+
+- Automatic window management and cleanup functions
+
+- **Clear Startup Flow** - Only startup configuration writes parameters at start
+
+## [0.0.0.13] - 2025-01-15
+
+- **Logging Clarity** - "Startup complete" message marks end of initialization
+
+### Added
+
+- **Parameter Lock Visualization** - Locked parameters displayed with 🔒 and status
+
+- **Unlock Functionality** - "🔓 Unlock" button for unlockable parameters
+
+- **Lock Status Detection** - Automatic detection of read-only and inactive parameters### Technical### Fixed### Behoben
+
+- **Visual Lock Distinction** - Different icons and colors for different lock types
+
+- startup_complete flag in MainWindow.__init__()
+
+### Improved
+
+- **Parameter Status Display** with color-coded indicators:- load_camera_config() checks startup_complete before execution- **--minimized on Linux** - Now works correctly with X11/Wayland window managers- **--minimized unter Linux** - Funktioniert jetzt korrekt mit X11/Wayland Window Managern
+
+  - 🔒 (red) for READ-ONLY parameters
+
+  - ⚠️ (orange) for INACTIVE parameters- Removed parameter-setting loop from load_camera_config()
+
+  - Unlock button only for unlockable parameters
+
+- **Intelligent Unlock Strategies** - Automatic deactivation of auto modes- Debug logging for skipped config loads during startup- **update_idletasks()** - Forces tkinter to communicate with window manager- **update_idletasks()** - Zwingt tkinter zur Kommunikation mit Window Manager
+
+- **Detailed Tooltips** for lock status with flag information
+
+
+
+### New Unlock Strategies
+
+- **exposure_absolute** ← disable exposure_auto### Behavior Changes- **Timing Issue** - deiconify() → update → iconify() sequence for Linux- **Timing-Problem** - deiconify() → update → iconify() Sequenz für Linux
+
+- **focus_absolute** ← disable focus_auto
+
+- **white_balance_temperature** ← disable white_balance_temperature_auto**BEFORE this change:**
+
+- **gain** ← disable gain_automatic
+
+- **brightness/contrast/saturation** ← disable auto_exposure1. Camera detection → set parameters
+
+
+
+## [0.0.0.12] - 2025-01-152. Load config → set parameters
+
+
+
+### Added3. Startup config → set parameters### Improved### Verbessert
+
+- **Extended Camera Detection** - Check if cameras are preview-capable
+
+- **Text Input Fields** for direct value input next to sliders4. Select first camera → set parameters
+
+- **Parameter Tooltips** with English explanations for all camera parameters
+
+- **Startup Configuration Menu** to select which cameras are configured at startup= Parameters set 3-4 times!- **Platform-agnostic** - Now works on both Windows AND Linux- **Platform-agnostisch** - Funktioniert jetzt auf Windows UND Linux
+
+- **Non-functional Camera Marking** with "[No Preview]" label
 
 
 
 ### Improved
 
-- **Startup Flag** - startup_complete flag prevents parameter sets during initialization
+- **Camera Detection** now checks v4l2-ctl --list-formats for actual functionality**AFTER this change:**- **Debug Logging** - "Started in minimized state" message added- **Debug-Logging** - "Started in minimized state" Nachricht hinzugefügt
 
-- **load_camera_config** - Now only display refresh, no parameter transfer## [0.0.0.22] - 2025-10-15## [0.0.0.22] - 2025-10-15
+- **Parameter Controls** with combined slider + text input
 
-- **Clear Startup Flow** - Only startup configuration writes parameters at start
+- **User-Friendliness** through informative tooltips with parameter descriptions1. Camera detection → only load
 
-- **Logging Clarity** - "Startup complete" message marks end of initialization
-
-
-
-### Technical### Fixed### Behoben
-
-- startup_complete flag in MainWindow.__init__()
-
-- load_camera_config() checks startup_complete before execution- **--minimized on Linux** - Now works correctly with X11/Wayland window managers- **--minimized unter Linux** - Funktioniert jetzt korrekt mit X11/Wayland Window Managern
-
-- Removed parameter-setting loop from load_camera_config()
-
-- Debug logging for skipped config loads during startup- **update_idletasks()** - Forces tkinter to communicate with window manager- **update_idletasks()** - Zwingt tkinter zur Kommunikation mit Window Manager
-
-
-
-### Behavior Changes- **Timing Issue** - deiconify() → update → iconify() sequence for Linux- **Timing-Problem** - deiconify() → update → iconify() Sequenz für Linux
-
-**BEFORE this change:**
-
-1. Camera detection → set parameters
-
-2. Load config → set parameters
-
-3. Startup config → set parameters### Improved### Verbessert
-
-4. Select first camera → set parameters
-
-= Parameters set 3-4 times!- **Platform-agnostic** - Now works on both Windows AND Linux- **Platform-agnostisch** - Funktioniert jetzt auf Windows UND Linux
-
-
-
-**AFTER this change:**- **Debug Logging** - "Started in minimized state" message added- **Debug-Logging** - "Started in minimized state" Nachricht hinzugefügt
-
-1. Camera detection → only load
+- **Automatic Configuration** at application startup for defined cameras
 
 2. Load config → skipped (startup_complete=False)- **start_minimized Flag** - Stored as instance variable for later access- **start_minimized Flag** - Als Instanz-Variable gespeichert für späteren Zugriff
 
-3. Startup config → set parameters (only source at start)
+### Technical
 
-4. startup_complete = True
+- New helper methods: _is_capture_device(), _check_preview_capability()3. Startup config → set parameters (only source at start)
 
-5. Select first camera → only display refresh
+- Parameter tooltip system with extensive description database
 
-= Parameters set 1 time!### Technical### Technisch
+- StartupConfigWindow for graphical configuration management4. startup_complete = True
+
+- Extended camera availability checks
+
+- JSON-based startup configuration storage5. Select first camera → only display refresh
 
 
 
-### Logging Improvements- `self.start_minimized` stored in __init__- `self.start_minimized` in __init__ gespeichert
-
-- "Startup complete - parameter changes will now be applied"
-
-- "Skipping config load for /dev/videoX - startup not complete" (DEBUG)- `update_idletasks()` before and after `deiconify()` for Linux window manager sync- `update_idletasks()` vor und nach `deiconify()` für Linux Window Manager Sync
-
-- "Loaded saved config for /dev/videoX, refreshing display only"
-
-- Minimization occurs after complete UI setup- Minimierung erfolgt nach vollständigem UI-Setup
-
-## [0.0.0.19] - 2025-01-15
+## [0.0.0.1] - 2025-10-15= Parameters set 1 time!### Technical### Technisch
 
 
 
 ### Added
 
-- **CLI Arguments** - Command line support for various startup options## [0.0.0.21] - 2025-10-15## [0.0.0.21] - 2025-10-15
+- **GUI Application** with tkinter for user-friendly operation
 
-- **Minimized Start** - `--minimized` or `-m` starts application minimized
+- **Automatic Camera Detection** of all available V4L2 devices### Logging Improvements- `self.start_minimized` stored in __init__- `self.start_minimized` in __init__ gespeichert
 
-- **Debug Mode** - `--debug` enables debug logging
+- **Parameter Control** with intuitive sliders and input fields
 
-- **Version Display** - `--version` shows version, also visible in window title
+  - Brightness- "Startup complete - parameter changes will now be applied"
 
-- **Enhanced About Dialog** - Shows author (I3uLL3t), features and version### Fixed### Behoben
+  - Contrast
 
-- **Donation Button** - PayPal.me/i3ull3t link in About dialog and Help menu
+  - Saturation- "Skipping config load for /dev/videoX - startup not complete" (DEBUG)- `update_idletasks()` before and after `deiconify()` for Linux window manager sync- `update_idletasks()` vor und nach `deiconify()` für Linux Window Manager Sync
 
-- **Detailed Startup Logging** - Device path in all startup config logs- **--minimized CLI Argument** - Application now starts correctly minimized- **--minimized CLI Argument** - Anwendung startet jetzt korrekt minimiert
+  - Hue
+
+  - White Balance- "Loaded saved config for /dev/videoX, refreshing display only"
+
+  - Exposure (auto, absolute)
+
+  - Gain- Minimization occurs after complete UI setup- Minimierung erfolgt nach vollständigem UI-Setup
+
+  - Sharpness
+
+  - And all other available V4L2 parameters## [0.0.0.19] - 2025-01-15
+
+- **Live Camera Preview** with OpenCV integration
+
+  - Adjustable resolution
+
+  - Real-time parameter updates
+
+  - Thread-based performance### Added
+
+- **Configuration System** for persistent settings
+
+  - JSON-based storage per camera- **CLI Arguments** - Command line support for various startup options## [0.0.0.21] - 2025-10-15## [0.0.0.21] - 2025-10-15
+
+  - Automatic loading on camera switch
+
+  - Import/Export of configurations- **Minimized Start** - `--minimized` or `-m` starts application minimized
+
+- **Backup System** for original parameters
+
+  - Backup of original camera settings- **Debug Mode** - `--debug` enables debug logging
+
+  - One-click restore
+
+  - Protection against accidental changes- **Version Display** - `--version` shows version, also visible in window title
+
+- **Multi-Camera Support**
+
+  - Dropdown selection between cameras- **Enhanced About Dialog** - Shows author (I3uLL3t), features and version### Fixed### Behoben
+
+  - Separate configurations per device
+
+  - Hot-swap capable- **Donation Button** - PayPal.me/i3ull3t link in About dialog and Help menu
+
+- **Modular Architecture** for easy maintenance
+
+  - Separate modules for Camera, GUI, Config, Utils- **Detailed Startup Logging** - Device path in all startup config logs- **--minimized CLI Argument** - Application now starts correctly minimized- **--minimized CLI Argument** - Anwendung startet jetzt korrekt minimiert
+
+  - Clean interfaces between components
+
+  - Extensible structure
 
 
 
-### CLI Usage- **Window Visibility** - window.withdraw() directly after window creation- **Fenster-Sichtbarkeit** - window.withdraw() direkt nach Fenster-Erstellung
+### Technical Features### CLI Usage- **Window Visibility** - window.withdraw() directly after window creation- **Fenster-Sichtbarkeit** - window.withdraw() direkt nach Fenster-Erstellung
 
-```bash
+- **V4L2 Integration** via direct v4l2-ctl commands
 
-# Start normally- **Startup Flow** - Minimized logic moved before UI setup- **Startup-Flow** - Minimized-Logik vor UI-Setup verschoben
+- **Cross-Platform Compatibility** (development possible on Windows)```bash
+
+- **Logging System** with configurable log levels
+
+- **Error Handling** with user-friendly error messages# Start normally- **Startup Flow** - Minimized logic moved before UI setup- **Startup-Flow** - Minimized-Logik vor UI-Setup verschoben
+
+- **Threading** for non-blocking GUI operations
 
 python src/main.py
 
+### Build System
 
+- **Automated Build Scripts** for Linux deployment
 
-# Start minimized
+- **Development Tools** for easy development
 
-python src/main.py --minimized### Technical### Technisch
+- **PyInstaller Integration** for standalone executables# Start minimized
 
+- **Requirements Management** with pip
 
-
-# With debug logging- `withdraw()` directly after `tk.Tk()` creation with --minimized flag- `withdraw()` direkt nach `tk.Tk()` Erstellung bei --minimized Flag
-
-python src/main.py --debug
-
-- `deiconify()` + `iconify()` at end for correct minimization- `deiconify()` + `iconify()` am Ende für korrekte Minimierung
-
-# Show version
-
-python src/main.py --version- Prevents brief window flash when starting minimized- Verhindert kurzes Aufblitzen des Fensters bei minimiertem Start
-
-```
+- **Desktop Integration** with .desktop filespython src/main.py --minimized### Technical### Technisch
 
 
 
-## [0.0.0.18] - 2025-01-15
+### Documentation
 
-## [0.0.0.20] - 2025-01-15## [0.0.0.20] - 2025-01-15
+- **Comprehensive README** with installation and usage
 
-### Fixed
+- **Code Documentation** with docstrings# With debug logging- `withdraw()` directly after `tk.Tk()` creation with --minimized flag- `withdraw()` direkt nach `tk.Tk()` Erstellung bei --minimized Flag
+
+- **Examples** and troubleshooting guide
+
+- **Architecture Overview** for developerspython src/main.py --debug
+
+
+
+---- `deiconify()` + `iconify()` at end for correct minimization- `deiconify()` + `iconify()` am Ende für korrekte Minimierung
+
+
+
+## Changelog Format# Show version
+
+
+
+### Categoriespython src/main.py --version- Prevents brief window flash when starting minimized- Verhindert kurzes Aufblitzen des Fensters bei minimiertem Start
+
+- **Added** for new features
+
+- **Changed** for changes to existing functionality```
+
+- **Deprecated** for features that will be removed soon
+
+- **Removed** for features removed in this version
+
+- **Fixed** for bug fixes
+
+- **Security** for security updates## [0.0.0.18] - 2025-01-15
+
+
+
+### Versioning## [0.0.0.20] - 2025-01-15## [0.0.0.20] - 2025-01-15
+
+- **MAJOR** version for incompatible API changes
+
+- **MINOR** version for new functionality (backwards compatible)### Fixed
+
+- **PATCH** version for bug fixes (backwards compatible)
 
 - **Slider-Text Synchronization** - Text input field now updates correctly when moving slider
 
