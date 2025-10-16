@@ -1,113 +1,113 @@
 # CamLoader Troubleshooting Guide
 
-## Ausführbare Datei startet nicht auf Debian/Ubuntu
+## Executable Does Not Start on Debian/Ubuntu
 
-### Häufige Probleme und Lösungen
+### Common Problems and Solutions
 
-#### 1. Berechtigungen überprüfen
+#### 1. Check Permissions
 ```bash
-# Ausführbare Berechtigung setzen
+# Set executable permission
 chmod +x camloader-linux-x86_64
 
-# Überprüfen der Berechtigungen
+# Verify permissions
 ls -la camloader-linux-x86_64
 ```
 
-#### 2. Fehlende System-Bibliotheken
+#### 2. Missing System Libraries
 ```bash
-# Auf Debian/Ubuntu erforderliche Pakete installieren:
+# Install required packages on Debian/Ubuntu:
 sudo apt update
 sudo apt install -y python3-tk python3-pil python3-pil.imagetk v4l-utils
 
-# Für ältere Systeme zusätzlich:
+# For older systems additionally:
 sudo apt install -y libgtk-3-0 libgdk-pixbuf2.0-0 libfontconfig1 libxrender1 libxinerama1 libxi6 libxrandr2 libxcursor1 libxcomposite1 libxdamage1 libxfixes3 libxss1 libxtst6 libasound2
 
-# OpenCV-Abhängigkeiten:
+# OpenCV dependencies:
 sudo apt install -y libopencv-dev python3-opencv
 ```
 
-#### 3. Debug-Informationen sammeln
+#### 3. Gather Debug Information
 
-**Option A: Debug-Wrapper verwenden**
+**Option A: Use Debug Wrapper**
 ```bash
-# Debug-Wrapper herunterladen und verwenden
+# Download and use debug wrapper
 wget https://github.com/Peschi90/cam-loader-linux/releases/latest/download/camloader-debug.sh
 chmod +x camloader-debug.sh
 ./camloader-debug.sh
 ```
 
-**Option B: Manuell debuggen**
+**Option B: Manual Debugging**
 ```bash
-# Dateityp überprüfen
+# Check file type
 file camloader-linux-x86_64
 
-# Bibliotheks-Abhängigkeiten prüfen
+# Check library dependencies
 ldd camloader-linux-x86_64
 
-# Mit Fehlerausgabe starten
+# Start with error output
 ./camloader-linux-x86_64 2>&1 | tee camloader-error.log
 ```
 
-#### 4. Systemkompatibilität
+#### 4. System Compatibility
 
-**Mindestanforderungen:**
+**Minimum Requirements:**
 - Linux x86_64 (64-bit)
 - GLIBC >= 2.17 (Ubuntu 14.04+, Debian 8+)
-- X11 (GUI-Umgebung)
-- Python 3.7+ kompatible Bibliotheken
+- X11 (GUI environment)
+- Python 3.7+ compatible libraries
 
-**Kompatibilitätscheck:**
+**Compatibility Check:**
 ```bash
-# GLIBC-Version prüfen
+# Check GLIBC version
 ldd --version
 
-# X11 verfügbar?
+# X11 available?
 echo $DISPLAY
 xdpyinfo 2>/dev/null && echo "X11 OK" || echo "X11 Problem"
 
-# V4L2-Geräte verfügbar?
-ls /dev/video* 2>/dev/null || echo "Keine Kameras gefunden"
+# V4L2 devices available?
+ls /dev/video* 2>/dev/null || echo "No cameras found"
 ```
 
-#### 5. Alternative: Python-Umgebung
+#### 5. Alternative: Python Environment
 
-Falls die ausführbare Datei nicht funktioniert, können Sie das Programm direkt mit Python ausführen:
+If the executable doesn't work, you can run the program directly with Python:
 
 ```bash
-# Repository klonen
+# Clone repository
 git clone https://github.com/Peschi90/cam-loader-linux.git
 cd cam-loader-linux
 
-# Abhängigkeiten installieren
+# Install dependencies
 pip3 install -r requirements.txt
 
-# Programm starten
+# Start program
 python3 src/main.py
 ```
 
-### Fehlermeldungen und deren Bedeutung
+### Error Messages and Their Meaning
 
-| Fehlermeldung | Ursache | Lösung |
-|---------------|---------|---------|
-| `./camloader-linux-x86_64: No such file or directory` | 32-bit System oder fehlende Bibliotheken | GLIBC und Abhängigkeiten installieren |
-| `ImportError: No module named '_tkinter'` | Tkinter nicht verfügbar | `sudo apt install python3-tk` |
-| `cv2.error: OpenCV(4.x)` | OpenCV-Problem | `sudo apt install python3-opencv` |
-| `Permission denied` | Keine Ausführberechtigung | `chmod +x camloader-linux-x86_64` |
-| Schwarzes Fenster ohne Inhalt | GUI-Bibliotheken fehlen | Libgtk und X11-Pakete installieren |
+| Error Message | Cause | Solution |
+|---------------|-------|----------|
+| `./camloader-linux-x86_64: No such file or directory` | 32-bit system or missing libraries | Install GLIBC and dependencies |
+| `ImportError: No module named '_tkinter'` | Tkinter not available | `sudo apt install python3-tk` |
+| `cv2.error: OpenCV(4.x)` | OpenCV problem | `sudo apt install python3-opencv` |
+| `Permission denied` | No execute permission | `chmod +x camloader-linux-x86_64` |
+| Black window without content | GUI libraries missing | Install libgtk and X11 packages |
 
 ### Support
 
-Bei weiterhin bestehenden Problemen:
+If problems persist:
 
-1. Debug-Log erstellen:
+1. Create debug log:
    ```bash
    ./camloader-debug.sh > debug-output.txt 2>&1
    ```
 
-2. Issue auf GitHub erstellen mit:
-   - Debian/Ubuntu Version (`lsb_release -a`)
-   - Architektur (`uname -m`)
-   - Debug-Log Inhalt
-   - Fehlermeldung
+2. Create issue on GitHub with:
+   - Debian/Ubuntu version (`lsb_release -a`)
+   - Architecture (`uname -m`)
+   - Debug log content
+   - Error message
 
 3. Link: https://github.com/Peschi90/cam-loader-linux/issues
