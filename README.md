@@ -22,7 +22,6 @@ A user-friendly GUI application for controlling V4L2 camera parameters on Linux,
 - **GUI Framework**: tkinter
 - **V4L2 Integration**: Direct v4l2-ctl commands
 - **Configuration**: JSON-based storage per camera
-- **Build System**: GitHub Actions with PyInstaller
 - **Release**: Standalone Linux x86_64 Executable
 
 ## Installation
