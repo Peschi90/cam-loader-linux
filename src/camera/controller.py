@@ -7,6 +7,7 @@ import subprocess
 import shutil
 import json
 import logging
+import os
 import re
 import platform
 from typing import Dict, List, Optional, Tuple, Any
@@ -108,6 +109,23 @@ class CameraController:
         logger.warning("v4l2-ctl not found in PATH or common locations")
         return "v4l2-ctl"  # Fall back to name, hope PATH works
     
+    def _get_clean_env(self):
+        """Get environment with LD_LIBRARY_PATH cleaned for external commands.
+        
+        PyInstaller sets LD_LIBRARY_PATH to its temp directory, which contains
+        bundled libraries (e.g. libstdc++.so.6) that may be older than what
+        system tools like v4l2-ctl require. We restore the original
+        LD_LIBRARY_PATH so external commands use system libraries.
+        """
+        env = os.environ.copy()
+        # PyInstaller saves the original value in *_ORIG
+        orig = env.get('LD_LIBRARY_PATH_ORIG')
+        if orig is not None:
+            env['LD_LIBRARY_PATH'] = orig
+        elif 'LD_LIBRARY_PATH' in env:
+            del env['LD_LIBRARY_PATH']
+        return env
+
     def _run_v4l2_command(self, command: List[str]) -> Tuple[bool, str]:
         """Run a v4l2 command and return success status and output"""
         # Replace 'v4l2-ctl' with full path if found
@@ -119,7 +137,8 @@ class CameraController:
                 command, 
                 capture_output=True, 
                 text=True, 
-                timeout=10
+                timeout=10,
+                env=self._get_clean_env()
             )
             if result.returncode != 0 and result.stderr:
                 logger.debug(f"Command stderr: {' '.join(command)}: {result.stderr.strip()}")

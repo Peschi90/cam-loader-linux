@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-language support
 - Dark theme
 
+## [0.0.0.29] - 2026-03-20
+
+### Fixed
+- **PyInstaller LD_LIBRARY_PATH conflict** - PyInstaller bundles an older `libstdc++.so.6` and sets `LD_LIBRARY_PATH` to its temp directory, causing `v4l2-ctl` to fail with `GLIBCXX_3.4.32 not found`. Subprocess calls now use a cleaned environment that restores the original `LD_LIBRARY_PATH`.
+
 ## [0.0.0.28] - 2026-03-20
 
 ### Fixed
