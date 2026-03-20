@@ -109,13 +109,38 @@ class CameraController:
     def _is_capture_device(self, device_path: str) -> bool:
         """Check if device is a video capture device"""
         try:
+            # Method 1: Check --list-formats output for capture type
             success, output = self._run_v4l2_command([
                 "v4l2-ctl", "--device", device_path, "--list-formats"
             ])
             
             if success and output:
-                # Check if it has capture formats
-                return "Video Capture" in output or "Type: Video Capture" in output
+                output_lower = output.lower()
+                if "video capture" in output_lower:
+                    return True
+                # Some devices list formats without explicit type header
+                # Check if any pixel formats are listed (indicates capture capability)
+                if re.search(r"\[\d+\]:", output):
+                    return True
+            
+            # Method 2: Check device capabilities via --info
+            success, output = self._run_v4l2_command([
+                "v4l2-ctl", "--device", device_path, "--info"
+            ])
+            
+            if success and output:
+                output_lower = output.lower()
+                # Check Device Caps or capabilities for video capture
+                if "video capture" in output_lower:
+                    return True
+            
+            # Method 3: Check if device has any controls (basic capture device check)
+            success, output = self._run_v4l2_command([
+                "v4l2-ctl", "--device", device_path, "--list-ctrls"
+            ])
+            
+            if success and output and output.strip():
+                return True
             
             return False
         except Exception:

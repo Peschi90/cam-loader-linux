@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-language support
 - Dark theme
 
+## [0.0.0.27] - 2026-03-20
+
+### Fixed
+- **Camera Detection** - Fixed cameras not being detected ("not a capture device" for all devices)
+- **Improved Detection Logic** - Added multiple fallback methods: --list-formats, --info capabilities check, and --list-ctrls
+- **Case-Insensitive Matching** - Detection now handles different v4l2-ctl output formats across Linux distributions
+- **Format Index Detection** - Recognizes devices that list pixel formats without explicit "Video Capture" header
+
 ## [0.0.0.26] - 2025-01-17
 
 ### Fixed
