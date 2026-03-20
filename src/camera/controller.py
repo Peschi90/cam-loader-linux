@@ -4,6 +4,7 @@ Handles camera detection, parameter management, and V4L2 communication
 """
 
 import subprocess
+import shutil
 import json
 import logging
 import re
@@ -87,10 +88,32 @@ class CameraController:
     
     def __init__(self):
         self.cameras: Dict[str, CameraDevice] = {}
+        self._v4l2_ctl_path = self._find_v4l2_ctl()
         self._detect_cameras()
+    
+    def _find_v4l2_ctl(self) -> str:
+        """Find the v4l2-ctl binary path"""
+        # Try shutil.which first
+        path = shutil.which("v4l2-ctl")
+        if path:
+            logger.debug(f"Found v4l2-ctl at: {path}")
+            return path
+        
+        # Try common locations
+        for candidate in ["/usr/bin/v4l2-ctl", "/usr/local/bin/v4l2-ctl", "/usr/sbin/v4l2-ctl"]:
+            if Path(candidate).exists():
+                logger.debug(f"Found v4l2-ctl at: {candidate}")
+                return candidate
+        
+        logger.warning("v4l2-ctl not found in PATH or common locations")
+        return "v4l2-ctl"  # Fall back to name, hope PATH works
     
     def _run_v4l2_command(self, command: List[str]) -> Tuple[bool, str]:
         """Run a v4l2 command and return success status and output"""
+        # Replace 'v4l2-ctl' with full path if found
+        if command and command[0] == "v4l2-ctl" and self._v4l2_ctl_path != "v4l2-ctl":
+            command = [self._v4l2_ctl_path] + command[1:]
+        
         try:
             result = subprocess.run(
                 command, 
@@ -98,9 +121,14 @@ class CameraController:
                 text=True, 
                 timeout=10
             )
+            if result.returncode != 0 and result.stderr:
+                logger.debug(f"Command stderr: {' '.join(command)}: {result.stderr.strip()}")
             return result.returncode == 0, result.stdout
         except subprocess.TimeoutExpired:
             logger.error(f"Command timeout: {' '.join(command)}")
+            return False, ""
+        except FileNotFoundError:
+            logger.error(f"Command not found: {command[0]}")
             return False, ""
         except Exception as e:
             logger.error(f"Command failed: {' '.join(command)}, Error: {e}")
@@ -109,29 +137,40 @@ class CameraController:
     def _is_capture_device(self, device_path: str) -> bool:
         """Check if device is a video capture device"""
         try:
-            # Method 1: Check --list-formats output for capture type
-            success, output = self._run_v4l2_command([
-                "v4l2-ctl", "--device", device_path, "--list-formats"
-            ])
-            
-            if success and output:
-                output_lower = output.lower()
-                if "video capture" in output_lower:
-                    return True
-                # Some devices list formats without explicit type header
-                # Check if any pixel formats are listed (indicates capture capability)
-                if re.search(r"\[\d+\]:", output):
-                    return True
-            
-            # Method 2: Check device capabilities via --info
+            # Method 1: Check device capabilities via --info (most reliable)
             success, output = self._run_v4l2_command([
                 "v4l2-ctl", "--device", device_path, "--info"
             ])
             
+            logger.debug(f"_is_capture_device({device_path}): --info success={success}, output_len={len(output) if output else 0}")
+            if not success:
+                logger.debug(f"_is_capture_device({device_path}): --info command failed")
+            
             if success and output:
+                # Log first few lines for debugging
+                first_lines = output.strip().split('\n')[:5]
+                logger.debug(f"_is_capture_device({device_path}): --info output: {first_lines}")
+                
                 output_lower = output.lower()
                 # Check Device Caps or capabilities for video capture
                 if "video capture" in output_lower:
+                    logger.debug(f"_is_capture_device({device_path}): Found 'video capture' in --info output")
+                    return True
+            
+            # Method 2: Check --list-formats output for capture type
+            success, output = self._run_v4l2_command([
+                "v4l2-ctl", "--device", device_path, "--list-formats"
+            ])
+            
+            logger.debug(f"_is_capture_device({device_path}): --list-formats success={success}, output_len={len(output) if output else 0}")
+            
+            if success and output:
+                logger.debug(f"_is_capture_device({device_path}): --list-formats output: {output.strip()[:200]}")
+                output_lower = output.lower()
+                if "video capture" in output_lower:
+                    return True
+                # Some devices list formats without explicit type header
+                if re.search(r"\[\d+\]:", output):
                     return True
             
             # Method 3: Check if device has any controls (basic capture device check)
@@ -139,11 +178,16 @@ class CameraController:
                 "v4l2-ctl", "--device", device_path, "--list-ctrls"
             ])
             
+            logger.debug(f"_is_capture_device({device_path}): --list-ctrls success={success}, output_len={len(output) if output else 0}")
+            
             if success and output and output.strip():
+                logger.debug(f"_is_capture_device({device_path}): Device has controls, treating as capture device")
                 return True
             
+            logger.debug(f"_is_capture_device({device_path}): All methods failed, not a capture device")
             return False
-        except Exception:
+        except Exception as e:
+            logger.error(f"_is_capture_device({device_path}): Exception: {e}")
             return False
     
     def _check_preview_capability(self, device_path: str) -> bool:
@@ -213,16 +257,122 @@ class CameraController:
             self.cameras["dummy0"] = dummy_camera
             return
         
-        # Find video devices (Linux only)
+        # Log v4l2-ctl location for debugging
+        logger.debug(f"Using v4l2-ctl: {self._v4l2_ctl_path}")
+        
+        # Primary method: Use v4l2-ctl --list-devices to discover cameras
+        cameras_found = self._detect_via_list_devices()
+        
+        if not cameras_found:
+            logger.info("--list-devices found no cameras, trying /dev/video* scan...")
+            self._detect_via_device_scan()
+    
+    def _detect_via_list_devices(self) -> bool:
+        """Detect cameras using v4l2-ctl --list-devices"""
+        success, output = self._run_v4l2_command([
+            "v4l2-ctl", "--list-devices"
+        ])
+        
+        logger.debug(f"--list-devices success={success}, output_len={len(output) if output else 0}")
+        
+        if not success or not output:
+            logger.debug(f"--list-devices failed or empty output")
+            return False
+        
+        logger.debug(f"--list-devices output:\n{output}")
+        
+        # Parse the output: camera name followed by indented device paths
+        # Example:
+        # USB Camera: USB Camera (usb-0000:00:12.0-1.1):
+        #         /dev/video0
+        #         /dev/video1
+        #         /dev/media0
+        current_name = None
+        device_groups = {}
+        
+        for line in output.split('\n'):
+            line_stripped = line.strip()
+            if not line_stripped:
+                continue
+            
+            if not line.startswith('\t') and not line.startswith(' '):
+                # This is a camera name line (ends with ':')
+                current_name = line_stripped.rstrip(':')
+                # Remove the USB path info in parentheses for cleaner name
+                name_match = re.match(r'^(.+?)\s*\(', current_name)
+                if name_match:
+                    current_name = name_match.group(1).strip()
+            elif current_name and line_stripped.startswith('/dev/video'):
+                # This is a device path
+                if current_name not in device_groups:
+                    device_groups[current_name] = []
+                device_groups[current_name].append(line_stripped)
+        
+        logger.debug(f"Parsed device groups: {device_groups}")
+        
+        if not device_groups:
+            return False
+        
+        # For each camera group, use the first /dev/video* device
+        for camera_name, device_paths in device_groups.items():
+            if not device_paths:
+                continue
+            
+            # Use the first video device (typically the capture device)
+            device_path = device_paths[0]
+            logger.info(f"Probing camera: {camera_name} at {device_path}")
+            
+            # Verify it's accessible with --info
+            success, info_output = self._run_v4l2_command([
+                "v4l2-ctl", "--device", device_path, "--info"
+            ])
+            
+            if not success:
+                logger.warning(f"Cannot access {device_path}, trying next device in group")
+                # Try other devices in the group
+                for alt_path in device_paths[1:]:
+                    if alt_path.startswith('/dev/video'):
+                        success, info_output = self._run_v4l2_command([
+                            "v4l2-ctl", "--device", alt_path, "--info"
+                        ])
+                        if success:
+                            device_path = alt_path
+                            break
+            
+            if not success:
+                logger.warning(f"Cannot access any device for camera: {camera_name}")
+                continue
+            
+            # Extract proper card name from --info output
+            if info_output:
+                name_match = re.search(r"Card type\s*:\s*(.+)", info_output)
+                if name_match:
+                    camera_name = name_match.group(1).strip()
+            
+            camera = CameraDevice(device_path, camera_name)
+            camera.is_available = self._check_preview_capability(device_path)
+            
+            self.cameras[device_path] = camera
+            logger.info(f"Found camera: {camera} (Preview: {'Yes' if camera.is_available else 'No'})")
+            
+            # Load initial parameters
+            self._load_camera_parameters(camera)
+        
+        return len(self.cameras) > 0
+    
+    def _detect_via_device_scan(self):
+        """Fallback: Detect cameras by scanning /dev/video* devices"""
+        # Find video devices
         video_devices = []
-        for i in range(20):  # Check /dev/video0 to /dev/video19
+        for i in range(20):
             device_path = f"/dev/video{i}"
             if Path(device_path).exists():
                 video_devices.append(device_path)
         
+        logger.debug(f"Found video devices: {video_devices}")
+        
         for device_path in video_devices:
             try:
-                # First check if device supports video capture
                 if not self._is_capture_device(device_path):
                     logger.debug(f"Skipping {device_path} - not a capture device")
                     continue
@@ -233,13 +383,10 @@ class CameraController:
                 ])
                 
                 if success and output:
-                    # Extract device name from output
                     name_match = re.search(r"Card type\s*:\s*(.+)", output)
                     device_name = name_match.group(1).strip() if name_match else f"Camera {device_path}"
                     
                     camera = CameraDevice(device_path, device_name)
-                    
-                    # Check if camera has preview capability
                     camera.is_available = self._check_preview_capability(device_path)
                     
                     self.cameras[device_path] = camera

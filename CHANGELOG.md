@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-language support
 - Dark theme
 
+## [0.0.0.28] - 2026-03-20
+
+### Fixed
+- **Camera Detection Rewrite** - Completely rewrote camera detection to use `v4l2-ctl --list-devices` as primary method
+- **v4l2-ctl Path Resolution** - Uses `shutil.which` and common paths to find v4l2-ctl binary (fixes PyInstaller PATH issues)
+- **Full Debug Logging** - Added comprehensive debug output for all v4l2-ctl commands (stderr, output content, success status)
+- **Device Group Parsing** - Parses `--list-devices` output to identify camera groups and use the correct capture device
+- **Fallback Detection** - Falls back to `/dev/video*` scan with `--info`, `--list-formats`, and `--list-ctrls` checks
+- **FileNotFoundError Handling** - Properly catches and logs when v4l2-ctl binary is not found
+
 ## [0.0.0.27] - 2026-03-20
 
 ### Fixed
