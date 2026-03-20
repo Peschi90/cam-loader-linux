@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-language support
 - Dark theme
 
+## [0.0.0.30] - 2026-03-20
+
+### Fixed
+- **SIGSEGV crash on startup** - PyInstaller's bundled `libstdc++.so.6` caused segmentation fault in tkinter/X11. Now restoring original `LD_LIBRARY_PATH` early in main process before any library loading.
+- **Identical cameras merged into one** - Multiple cameras with the same name (e.g. 3x "USB Camera") were grouped into one entry. Now uses the full USB path as unique key to keep them separate.
+
 ## [0.0.0.29] - 2026-03-20
 
 ### Fixed

@@ -306,8 +306,9 @@ class CameraController:
         #         /dev/video0
         #         /dev/video1
         #         /dev/media0
-        current_name = None
-        device_groups = {}
+        current_group_key = None
+        current_display_name = None
+        device_groups = {}  # key -> (display_name, [device_paths])
         
         for line in output.split('\n'):
             line_stripped = line.strip()
@@ -315,17 +316,18 @@ class CameraController:
                 continue
             
             if not line.startswith('\t') and not line.startswith(' '):
-                # This is a camera name line (ends with ':')
-                current_name = line_stripped.rstrip(':')
-                # Remove the USB path info in parentheses for cleaner name
-                name_match = re.match(r'^(.+?)\s*\(', current_name)
-                if name_match:
-                    current_name = name_match.group(1).strip()
-            elif current_name and line_stripped.startswith('/dev/video'):
+                # This is a camera name line, e.g.:
+                # USB Camera: USB Camera (usb-0000:00:12.0-1.1):
+                # Use the full line (including USB path) as unique group key
+                current_group_key = line_stripped.rstrip(':')
+                # Extract clean display name (without USB path)
+                name_match = re.match(r'^(.+?)\s*\(', current_group_key)
+                current_display_name = name_match.group(1).strip() if name_match else current_group_key
+            elif current_group_key and line_stripped.startswith('/dev/video'):
                 # This is a device path
-                if current_name not in device_groups:
-                    device_groups[current_name] = []
-                device_groups[current_name].append(line_stripped)
+                if current_group_key not in device_groups:
+                    device_groups[current_group_key] = (current_display_name, [])
+                device_groups[current_group_key][1].append(line_stripped)
         
         logger.debug(f"Parsed device groups: {device_groups}")
         
@@ -333,7 +335,7 @@ class CameraController:
             return False
         
         # For each camera group, use the first /dev/video* device
-        for camera_name, device_paths in device_groups.items():
+        for group_key, (camera_name, device_paths) in device_groups.items():
             if not device_paths:
                 continue
             

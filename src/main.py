@@ -10,8 +10,20 @@ import logging
 import argparse
 from pathlib import Path
 
+# Fix PyInstaller LD_LIBRARY_PATH conflict BEFORE any other imports.
+# PyInstaller sets LD_LIBRARY_PATH to its temp dir which contains bundled
+# libraries (e.g. libstdc++.so.6) that are older than what system components
+# like X11, Mesa, and v4l2-ctl require. Restoring the original value prevents
+# segfaults in tkinter/X11 and failures in subprocess calls.
+if hasattr(sys, '_MEIPASS'):
+    _orig = os.environ.get('LD_LIBRARY_PATH_ORIG')
+    if _orig is not None:
+        os.environ['LD_LIBRARY_PATH'] = _orig
+    elif 'LD_LIBRARY_PATH' in os.environ:
+        del os.environ['LD_LIBRARY_PATH']
+
 # Application version
-__version__ = "0.0.0.29"
+__version__ = "0.0.0.30"
 
 # Add src directory to Python path
 src_dir = Path(__file__).parent
